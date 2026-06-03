@@ -5,506 +5,992 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elektrik & Ev Planı Çizim</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden;user-select:none}
-#mode-tabs{display:flex;background:#010409;border-bottom:2px solid #30363d;flex-shrink:0}
-.mode-tab{padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:#8b949e;transition:all .2s}
-.mode-tab:hover{color:#c9d1d9;background:#161b22}
-.mode-tab.active{color:#f0883e;border-bottom-color:#f0883e;background:#161b22}
-#toolbar{background:#161b22;padding:6px 12px;display:flex;gap:6px;align-items:center;border-bottom:1px solid #30363d;flex-shrink:0;flex-wrap:wrap}
-.tool-btn{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;transition:all .15s;white-space:nowrap}
-.tool-btn:hover{background:#30363d}
-.tool-btn.active{background:#f0883e;border-color:#f0883e;color:#0d1117;font-weight:600}
-.sep{width:1px;height:24px;background:#30363d;margin:0 3px}
-#main{display:flex;flex:1;overflow:hidden}
-#sidebar{width:170px;background:#161b22;border-right:1px solid #30363d;overflow-y:auto;flex-shrink:0}
-#sidebar::-webkit-scrollbar{width:4px}
-#sidebar::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px}
-.sidebar-title{padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#8b949e;border-bottom:1px solid #21262d}
-.category{border-bottom:1px solid #21262d}
-.cat-label{padding:5px 10px 3px;font-size:10px;text-transform:uppercase;color:#f0883e}
-.comp-item{display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:grab;transition:background .1s}
-.comp-item:hover{background:#21262d}
-.ci-icon{width:36px;height:22px;flex-shrink:0}
-.ci-name{font-size:10px;color:#c9d1d9;line-height:1.2}
-.floor-item{padding:7px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d;transition:background .1s}
-.floor-item:hover{background:#21262d}
-.floor-item.active{background:#f0883e22;color:#f0883e;font-weight:600;border-left:3px solid #f0883e}
-#canvas-wrap{flex:1;position:relative;overflow:hidden;background:#0d1117}
-#grid-bg{position:absolute;inset:0;pointer-events:none}
-#main-svg{position:absolute;inset:0;width:100%;height:100%}
-#props{width:155px;background:#161b22;border-left:1px solid #30363d;padding:10px;flex-shrink:0;overflow-y:auto}
-#props h2{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#8b949e;margin-bottom:10px}
-.prop-row{margin-bottom:8px}
-.prop-lbl{font-size:10px;color:#8b949e;margin-bottom:3px}
-.prop-inp{width:100%;background:#0d1117;border:1px solid #30363d;color:#c9d1d9;padding:4px 6px;border-radius:4px;font-size:11px;outline:none}
-.prop-inp:focus{border-color:#f0883e}
-.prop-btn{width:100%;background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:5px;border-radius:4px;cursor:pointer;font-size:10px;margin-top:4px}
-.prop-btn:hover{background:#30363d}
-.prop-btn.danger{border-color:#f85149;color:#f85149}
-.prop-btn.danger:hover{background:#f85149;color:#fff}
-.no-sel{color:#484f58;font-size:11px;margin-top:6px;line-height:1.6}
-#statusbar{background:#161b22;padding:3px 12px;font-size:10px;color:#8b949e;display:flex;gap:20px;border-top:1px solid #30363d;flex-shrink:0}
-#tip{position:fixed;background:#1c2128;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;font-size:10px;pointer-events:none;display:none;z-index:999}
-#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:2000}
-#modal-overlay.show{display:flex}
-#modal{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;max-width:380px;width:90%}
-#modal h3{color:#f0883e;margin-bottom:10px;font-size:14px}
-#modal p{color:#8b949e;font-size:12px;line-height:1.6;margin-bottom:14px}
-#modal-btns{display:flex;gap:8px;justify-content:flex-end}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
+
+/* ---- TOOLBAR ---- */
+#toolbar {
+  background: #161b22; padding: 6px 12px; display: flex; gap: 6px;
+  align-items: center; border-bottom: 1px solid #30363d; flex-shrink: 0; flex-wrap: wrap;
+}
+#toolbar h1 { color: #f0883e; font-size: 15px; margin-right: 10px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+.tool-btn {
+  background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+  padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px;
+  transition: all 0.15s; white-space: nowrap;
+}
+.tool-btn:hover { background: #30363d; }
+.tool-btn.active { background: #f0883e; border-color: #f0883e; color: #0d1117; font-weight: 600; }
+.sep { width: 1px; height: 24px; background: #30363d; margin: 0 3px; }
+
+/* ---- MAIN LAYOUT ---- */
+#main { display: flex; flex: 1; overflow: hidden; }
+
+/* ---- SIDEBAR ---- */
+#sidebar {
+  width: 170px; background: #161b22; border-right: 1px solid #30363d;
+  overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column;
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+.sidebar-title { padding: 8px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8b949e; border-bottom: 1px solid #21262d; }
+.category { border-bottom: 1px solid #21262d; }
+.cat-label { padding: 5px 10px 3px; font-size: 10px; text-transform: uppercase; color: #f0883e; letter-spacing: 0.5px; }
+.comp-item {
+  display: flex; align-items: center; gap: 8px; padding: 5px 10px;
+  cursor: grab; transition: background 0.1s;
+}
+.comp-item:hover { background: #21262d; }
+.comp-item:active { cursor: grabbing; background: #30363d; }
+.ci-icon { width: 36px; height: 22px; flex-shrink: 0; }
+.ci-name { font-size: 10px; color: #c9d1d9; line-height: 1.2; }
+
+/* ---- CANVAS AREA ---- */
+#canvas-wrap { flex: 1; position: relative; overflow: hidden; background: #0d1117; }
+#grid-bg { position: absolute; inset: 0; pointer-events: none; }
+#main-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ---- PROPERTIES ---- */
+#props {
+  width: 155px; background: #161b22; border-left: 1px solid #30363d;
+  padding: 10px; flex-shrink: 0; overflow-y: auto;
+}
+#props h2 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8b949e; margin-bottom: 10px; }
+.prop-row { margin-bottom: 8px; }
+.prop-lbl { font-size: 10px; color: #8b949e; margin-bottom: 3px; }
+.prop-inp {
+  width: 100%; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9;
+  padding: 4px 6px; border-radius: 4px; font-size: 11px; outline: none;
+}
+.prop-inp:focus { border-color: #f0883e; }
+.prop-btn {
+  width: 100%; background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+  padding: 5px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-top: 4px;
+  transition: background 0.15s;
+}
+.prop-btn:hover { background: #30363d; }
+.prop-btn.danger { border-color: #f85149; color: #f85149; }
+.prop-btn.danger:hover { background: #f85149; color: #fff; }
+.no-sel { color: #484f58; font-size: 11px; margin-top: 6px; line-height: 1.6; }
+
+/* ---- STATUS ---- */
+#statusbar {
+  background: #161b22; padding: 3px 12px; font-size: 10px; color: #8b949e;
+  display: flex; gap: 20px; border-top: 1px solid #30363d; flex-shrink: 0;
+}
+
+/* ---- TOOLTIP ---- */
+#tip {
+  position: fixed; background: #1c2128; border: 1px solid #30363d; color: #c9d1d9;
+  padding: 3px 8px; border-radius: 4px; font-size: 10px; pointer-events: none;
+  display: none; z-index: 999;
+}
+
+/* ---- MODAL ---- */
+#modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: none; align-items: center; justify-content: center; z-index: 2000;
+}
+#modal-overlay.show { display: flex; }
+#modal {
+  background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+  padding: 20px; max-width: 360px; width: 90%;
+}
+#modal h3 { color: #f0883e; margin-bottom: 10px; font-size: 14px; }
+#modal p { color: #8b949e; font-size: 12px; line-height: 1.6; margin-bottom: 14px; }
+#modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
 </style>
 </head>
 <body>
-<div id="mode-tabs">
-  <div class="mode-tab active" id="tab-electric" onclick="switchMode('electric')">&#9889; Elektrik Semas&#305;</div>
-  <div class="mode-tab" id="tab-house" onclick="switchMode('house')">&#127968; Ev Plan&#305;</div>
+
+<!-- MOD SEKMELERİ -->
+<div id="mode-tabs" style="display:flex;background:#010409;border-bottom:2px solid #30363d;flex-shrink:0">
+  <div class="mode-tab active" id="tab-e" onclick="switchMode('e')" style="padding:7px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid #f0883e;margin-bottom:-2px;color:#f0883e;background:#161b22">⚡ Elektrik Şeması</div>
+  <div class="mode-tab" id="tab-h" onclick="switchMode('h')" style="padding:7px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:#8b949e">🏠 Ev Planı</div>
 </div>
+
+<!-- TOOLBAR -->
 <div id="toolbar">
-  <span id="tb-title" style="color:#f0883e;font-size:14px;font-weight:700;margin-right:8px">&#9889; ELEKTRiK</span>
-  <span id="tools-e" style="display:flex;gap:6px;align-items:center">
-    <button class="tool-btn active" id="tb-select" onclick="setTool('select')">&#8598; Se&#231; [S]</button>
-    <button class="tool-btn" id="tb-wire" onclick="setTool('wire')">&#8767; Kablo [W]</button>
-    <button class="tool-btn" id="tb-delete" onclick="setTool('delete')">&#10005; Sil [D]</button>
-  </span>
-  <span id="tools-h" style="display:none;gap:6px;align-items:center">
-    <button class="tool-btn active" id="tb-hselect" onclick="setTool('select')">&#8598; Se&#231; [S]</button>
-    <button class="tool-btn" id="tb-wall" onclick="setTool('wall')">&#9644; Duvar [W]</button>
-    <button class="tool-btn" id="tb-hdelete" onclick="setTool('delete')">&#10005; Sil [D]</button>
-    <div class="sep"></div>
-    <span style="font-size:10px;color:#8b949e">Kat:</span>
-    <span id="tb-floor" style="font-size:11px;color:#f0883e;font-weight:600">Zemin Kat</span>
-  </span>
+  <h1 id="tb-title">⚡ ELEKTRİK ÇİZİM</h1>
+  <button class="tool-btn active" id="tb-select" onclick="setTool('select')">↖ Seç <small style="opacity:.6">[S]</small></button>
+  <span id="tb-wire-btn"><button class="tool-btn" id="tb-wire" onclick="setTool('wire')">〰 Kablo <small style="opacity:.6">[W]</small></button></span>
+  <span id="tb-wall-btn" style="display:none"><button class="tool-btn" id="tb-wall" onclick="setTool('wall')">▬ Duvar <small style="opacity:.6">[W]</small></button></span>
+  <button class="tool-btn" id="tb-delete" onclick="setTool('delete')">✕ Sil <small style="opacity:.6">[D]</small></button>
+  <span id="tb-floor-badge" style="display:none;font-size:11px;color:#f0883e;font-weight:600;padding:0 6px">Zemin Kat</span>
   <div class="sep"></div>
-  <button class="tool-btn" onclick="zoomBy(1.25)">&#128269;+</button>
-  <button class="tool-btn" onclick="zoomBy(0.8)">&#128269;-</button>
-  <button class="tool-btn" onclick="resetView()">&#8855; S&#305;f&#305;rla</button>
+  <button class="tool-btn" onclick="zoomBy(1.25)">🔍+</button>
+  <button class="tool-btn" onclick="zoomBy(0.8)">🔍−</button>
+  <button class="tool-btn" onclick="resetView()">⊡ Sıfırla</button>
   <div class="sep"></div>
-  <button class="tool-btn" onclick="clearCanvas()">&#128465; Temizle</button>
-  <button class="tool-btn" onclick="saveFile()">&#128190; Kaydet</button>
-  <button class="tool-btn" onclick="document.getElementById('file-in').click()">&#128194; A&#231;</button>
-  <button class="tool-btn" onclick="exportSVG()">&#128228; SVG</button>
+  <button class="tool-btn" onclick="clearCanvas()">🗑 Temizle</button>
+  <button class="tool-btn" onclick="saveFile()">💾 Kaydet</button>
+  <button class="tool-btn" onclick="document.getElementById('file-in').click()">📂 Aç</button>
+  <button class="tool-btn" onclick="exportSVG()">📤 SVG</button>
   <div class="sep"></div>
-  <button class="tool-btn" onclick="showHelp()">? Yard&#305;m</button>
+  <button class="tool-btn" onclick="showHelp()">? Yardım</button>
   <input id="file-in" type="file" accept=".json" style="display:none" onchange="openFile(event)">
 </div>
+
+<!-- MAIN -->
 <div id="main">
-<div id="sidebar">
-  <!-- ELEKTRiK PANELi -->
-  <div id="panel-e">
-    <div class="sidebar-title">Elektrik Bilesenleri</div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-title">Bileşen Paleti</div>
+
     <div class="category">
       <div class="cat-label">Temel</div>
-      <div class="comp-item" draggable="true" data-type="sigorta"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="6" y="7" width="24" height="8" fill="none" stroke="#f0883e" stroke-width="1.5"/><line x1="0" y1="11" x2="6" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="30" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="9" y1="7" x2="27" y2="15" stroke="#f0883e" stroke-width="1.2"/></svg><span class="ci-name">Sigorta</span></div>
-      <div class="comp-item" draggable="true" data-type="anahtar"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><circle cx="10" cy="11" r="2.5" fill="#58a6ff"/><line x1="10" y1="11" x2="24" y2="5" stroke="#58a6ff" stroke-width="1.5"/><circle cx="24" cy="11" r="2.5" fill="none" stroke="#58a6ff" stroke-width="1.5"/><line x1="24" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Anahtar</span></div>
-      <div class="comp-item" draggable="true" data-type="lamba"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="8" fill="none" stroke="#ffd700" stroke-width="1.5"/><line x1="12" y1="7" x2="24" y2="15" stroke="#ffd700" stroke-width="1.5"/><line x1="24" y1="7" x2="12" y2="15" stroke="#ffd700" stroke-width="1.5"/><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Lamba</span></div>
-      <div class="comp-item" draggable="true" data-type="priz"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="8" fill="none" stroke="#58a6ff" stroke-width="1.5"/><line x1="15" y1="8" x2="15" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="21" y1="8" x2="21" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Priz</span></div>
+      <div class="comp-item" draggable="true" data-type="sigorta">
+        <svg class="ci-icon" viewBox="0 0 36 22"><rect x="6" y="7" width="24" height="8" fill="none" stroke="#f0883e" stroke-width="1.5"/><line x1="0" y1="11" x2="6" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="30" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="9" y1="7" x2="27" y2="15" stroke="#f0883e" stroke-width="1.2"/></svg>
+        <span class="ci-name">Sigorta</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="anahtar">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><circle cx="10" cy="11" r="2.5" fill="#58a6ff"/><line x1="10" y1="11" x2="24" y2="5" stroke="#58a6ff" stroke-width="1.5"/><circle cx="24" cy="11" r="2.5" fill="none" stroke="#58a6ff" stroke-width="1.5"/><line x1="24" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Anahtar</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="lamba">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="8" fill="none" stroke="#ffd700" stroke-width="1.5"/><line x1="12" y1="7" x2="24" y2="15" stroke="#ffd700" stroke-width="1.5"/><line x1="24" y1="7" x2="12" y2="15" stroke="#ffd700" stroke-width="1.5"/><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Lamba</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="priz">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="8" fill="none" stroke="#58a6ff" stroke-width="1.5"/><line x1="15" y1="8" x2="15" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="21" y1="8" x2="21" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Priz</span>
+      </div>
     </div>
+
     <div class="category">
       <div class="cat-label">Koruma</div>
-      <div class="comp-item" draggable="true" data-type="otomat"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="11" y="3" width="14" height="16" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/><line x1="0" y1="11" x2="11" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="25" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/><text x="18" y="14" text-anchor="middle" fill="#f0883e" font-size="6" font-weight="bold">OT</text></svg><span class="ci-name">Otomat Sig.</span></div>
-      <div class="comp-item" draggable="true" data-type="kesici"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><rect x="10" y="6" width="16" height="10" fill="none" stroke="#f85149" stroke-width="1.5"/><line x1="13" y1="8" x2="23" y2="14" stroke="#f85149" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Guc Kesici</span></div>
-      <div class="comp-item" draggable="true" data-type="topraklama"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="18" y1="2" x2="18" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="8" y1="11" x2="28" y2="11" stroke="#58a6ff" stroke-width="2"/><line x1="11" y1="14" x2="25" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="14" y1="17" x2="22" y2="17" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Topraklama</span></div>
+      <div class="comp-item" draggable="true" data-type="otomat">
+        <svg class="ci-icon" viewBox="0 0 36 22"><rect x="11" y="3" width="14" height="16" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/><line x1="0" y1="11" x2="11" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="25" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/><text x="18" y="14" text-anchor="middle" fill="#f0883e" font-size="6" font-weight="bold">OT</text></svg>
+        <span class="ci-name">Otomat Sig.</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="kesici">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><rect x="10" y="6" width="16" height="10" fill="none" stroke="#f85149" stroke-width="1.5"/><line x1="13" y1="8" x2="23" y2="14" stroke="#f85149" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Güç Kesici</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="topraklama">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="18" y1="2" x2="18" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="8" y1="11" x2="28" y2="11" stroke="#58a6ff" stroke-width="2"/><line x1="11" y1="14" x2="25" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="14" y1="17" x2="22" y2="17" stroke="#58a6ff" stroke-width="1"/></svg>
+        <span class="ci-name">Topraklama</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="role">
+        <svg class="ci-icon" viewBox="0 0 36 22"><rect x="10" y="5" width="16" height="12" fill="none" stroke="#7ee787" stroke-width="1.5" rx="2"/><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/><text x="18" y="14" text-anchor="middle" fill="#7ee787" font-size="6" font-weight="bold">RÖ</text></svg>
+        <span class="ci-name">Röle</span>
+      </div>
     </div>
+
     <div class="category">
       <div class="cat-label">Makine</div>
-      <div class="comp-item" draggable="true" data-type="motor"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#7ee787" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#7ee787" font-size="9" font-weight="bold">M</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Motor</span></div>
-      <div class="comp-item" draggable="true" data-type="jenerator"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#79c0ff" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#79c0ff" font-size="9" font-weight="bold">G</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Jenerator</span></div>
-      <div class="comp-item" draggable="true" data-type="trafo"><svg class="ci-icon" viewBox="0 0 36 22"><path d="M2,11 Q5,5 8,11 Q11,5 14,11 Q17,5 18,11" fill="none" stroke="#d2a8ff" stroke-width="1.5"/><path d="M18,11 Q19,17 22,11 Q25,17 28,11 Q31,17 34,11" fill="none" stroke="#d2a8ff" stroke-width="1.5"/></svg><span class="ci-name">Trafo</span></div>
+      <div class="comp-item" draggable="true" data-type="motor">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#7ee787" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#7ee787" font-size="9" font-weight="bold">M</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Motor</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="jenerator">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#79c0ff" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#79c0ff" font-size="9" font-weight="bold">G</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Jeneratör</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="trafo">
+        <svg class="ci-icon" viewBox="0 0 36 22"><path d="M2,11 Q5,5 8,11 Q11,5 14,11 Q17,5 18,11" fill="none" stroke="#d2a8ff" stroke-width="1.5"/><path d="M18,11 Q19,17 22,11 Q25,17 28,11 Q31,17 34,11" fill="none" stroke="#d2a8ff" stroke-width="1.5"/><line x1="18" y1="5" x2="18" y2="17" stroke="#444" stroke-width="1" stroke-dasharray="2,2"/></svg>
+        <span class="ci-name">Trafo</span>
+      </div>
     </div>
+
     <div class="category">
-      <div class="cat-label">Devre</div>
-      <div class="comp-item" draggable="true" data-type="direnc"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="6" y2="11" stroke="#58a6ff" stroke-width="1.5"/><polyline points="6,11 8,4 11,18 14,4 17,18 20,4 23,18 26,11" fill="none" stroke="#f0883e" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Direnc</span></div>
-      <div class="comp-item" draggable="true" data-type="kondansator"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="14" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="14" y1="5" x2="14" y2="17" stroke="#58a6ff" stroke-width="2.5"/><line x1="22" y1="5" x2="22" y2="17" stroke="#58a6ff" stroke-width="2.5"/><line x1="22" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Kondansator</span></div>
-      <div class="comp-item" draggable="true" data-type="bobin"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="4" y2="11" stroke="#58a6ff" stroke-width="1.5"/><path d="M4,11 Q7,4 10,11 Q13,4 16,11 Q19,4 22,11 Q25,4 28,11 Q31,4 32,11" fill="none" stroke="#d2a8ff" stroke-width="1.5"/><line x1="32" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Bobin</span></div>
-      <div class="comp-item" draggable="true" data-type="diyot"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><polygon points="10,5 10,17 24,11" fill="#f0883e" stroke="#f0883e" stroke-width="1"/><line x1="24" y1="5" x2="24" y2="17" stroke="#f0883e" stroke-width="2"/><line x1="24" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Diyot</span></div>
-      <div class="comp-item" draggable="true" data-type="pil"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="10" y1="6" x2="10" y2="16" stroke="#58a6ff" stroke-width="2.5"/><line x1="14" y1="8" x2="14" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="22" y1="6" x2="22" y2="16" stroke="#58a6ff" stroke-width="2.5"/><line x1="26" y1="8" x2="26" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Pil</span></div>
+      <div class="cat-label">Devre Elemanı</div>
+      <div class="comp-item" draggable="true" data-type="direnç">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="6" y2="11" stroke="#58a6ff" stroke-width="1.5"/><polyline points="6,11 8,4 11,18 14,4 17,18 20,4 23,18 26,11" fill="none" stroke="#f0883e" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Direnç</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="kondansator">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="14" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="14" y1="5" x2="14" y2="17" stroke="#58a6ff" stroke-width="2.5"/><line x1="22" y1="5" x2="22" y2="17" stroke="#58a6ff" stroke-width="2.5"/><line x1="22" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Kondansatör</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="bobin">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="4" y2="11" stroke="#58a6ff" stroke-width="1.5"/><path d="M4,11 Q7,4 10,11 Q13,4 16,11 Q19,4 22,11 Q25,4 28,11 Q31,4 32,11" fill="none" stroke="#d2a8ff" stroke-width="1.5"/><line x1="32" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Bobin</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="pil">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="10" y1="6" x2="10" y2="16" stroke="#58a6ff" stroke-width="2.5"/><line x1="14" y1="8" x2="14" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="22" y1="6" x2="22" y2="16" stroke="#58a6ff" stroke-width="2.5"/><line x1="26" y1="8" x2="26" y2="14" stroke="#58a6ff" stroke-width="1.5"/><line x1="26" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Pil / Batarya</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="diyot">
+        <svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="10" y2="11" stroke="#58a6ff" stroke-width="1.5"/><polygon points="10,5 10,17 24,11" fill="#f0883e" stroke="#f0883e" stroke-width="1"/><line x1="24" y1="5" x2="24" y2="17" stroke="#f0883e" stroke-width="2"/><line x1="24" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Diyot</span>
+      </div>
     </div>
+
     <div class="category">
       <div class="cat-label">Kaynak</div>
-      <div class="comp-item" draggable="true" data-type="ac"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#f0883e" stroke-width="1.5"/><path d="M11,11 Q14,4 18,11 Q22,18 25,11" fill="none" stroke="#f0883e" stroke-width="1.5"/><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">AC Kaynak</span></div>
-      <div class="comp-item" draggable="true" data-type="dc"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#58a6ff" stroke-width="1.5"/><text x="18" y="14" text-anchor="middle" fill="#58a6ff" font-size="7" font-weight="bold">DC</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">DC Kaynak</span></div>
+      <div class="comp-item" draggable="true" data-type="ac-kaynak">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#f0883e" stroke-width="1.5"/><path d="M11,11 Q14,4 18,11 Q22,18 25,11" fill="none" stroke="#f0883e" stroke-width="1.5"/><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">AC Kaynak</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="dc-kaynak">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#58a6ff" stroke-width="1.5"/><text x="18" y="14" text-anchor="middle" fill="#58a6ff" font-size="7" font-weight="bold">DC</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">DC Kaynak</span>
+      </div>
     </div>
+
     <div class="category">
-      <div class="cat-label">Olcum</div>
-      <div class="comp-item" draggable="true" data-type="voltmetre"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#7ee787" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#7ee787" font-size="10" font-weight="bold">V</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Voltmetre</span></div>
-      <div class="comp-item" draggable="true" data-type="ampermetre"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#f85149" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#f85149" font-size="10" font-weight="bold">A</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Ampermetre</span></div>
+      <div class="cat-label">Ölçüm</div>
+      <div class="comp-item" draggable="true" data-type="voltmetre">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#7ee787" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#7ee787" font-size="10" font-weight="bold">V</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Voltmetre</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="ampermetre">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#f85149" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#f85149" font-size="10" font-weight="bold">A</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Ampermetre</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="wattmetre">
+        <svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#d2a8ff" stroke-width="1.5"/><text x="18" y="15" text-anchor="middle" fill="#d2a8ff" font-size="10" font-weight="bold">W</text><line x1="0" y1="11" x2="9" y2="11" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="11" x2="36" y2="11" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Wattmetre</span>
+      </div>
+    </div>
+
+    <div class="category">
+      <div class="cat-label">Yapı</div>
+      <div class="comp-item" draggable="true" data-type="bara">
+        <svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="9" width="32" height="5" fill="#484f58" stroke="#8b949e" stroke-width="1"/><line x1="9" y1="4" x2="9" y2="9" stroke="#58a6ff" stroke-width="1.5"/><line x1="18" y1="4" x2="18" y2="9" stroke="#58a6ff" stroke-width="1.5"/><line x1="27" y1="4" x2="27" y2="9" stroke="#58a6ff" stroke-width="1.5"/></svg>
+        <span class="ci-name">Bara (Busbar)</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="metin">
+        <svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="4" width="32" height="14" fill="none" stroke="#8b949e" stroke-width="1" stroke-dasharray="3,2"/><text x="18" y="14" text-anchor="middle" fill="#8b949e" font-size="8">Metin</text></svg>
+        <span class="ci-name">Metin Kutusu</span>
+      </div>
     </div>
   </div>
-  <!-- EV PLANI PANELi -->
-  <div id="panel-h" style="display:none">
-    <div class="sidebar-title">Kat Secimi</div>
+
+  <!-- EV PLANI PANELİ (başlangıçta gizli) -->
+  <div id="panel-house" style="display:none">
+    <div class="sidebar-title">Kat Seçimi</div>
     <div id="floor-list">
-      <div class="floor-item" data-floor="bodrum" onclick="selectFloor(this)">Bodrum Kat</div>
-      <div class="floor-item active" data-floor="zemin" onclick="selectFloor(this)">Zemin Kat</div>
-      <div class="floor-item" data-floor="1kat" onclick="selectFloor(this)">1. Kat</div>
-      <div class="floor-item" data-floor="2kat" onclick="selectFloor(this)">2. Kat</div>
-      <div class="floor-item" data-floor="3kat" onclick="selectFloor(this)">3. Kat</div>
-      <div class="floor-item" data-floor="cati" onclick="selectFloor(this)">Cati Kati</div>
-      <div class="floor-item" data-floor="garaj" onclick="selectFloor(this)">Garaj</div>
-      <div class="floor-item" data-floor="bahce" onclick="selectFloor(this)">Bahce</div>
+      <div class="floor-item" data-f="bodrum" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d">Bodrum Kat</div>
+      <div class="floor-item active" data-f="zemin" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#f0883e;font-weight:600;border-bottom:1px solid #21262d;border-left:3px solid #f0883e;background:#f0883e11">Zemin Kat</div>
+      <div class="floor-item" data-f="1kat" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d">1. Kat</div>
+      <div class="floor-item" data-f="2kat" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d">2. Kat</div>
+      <div class="floor-item" data-f="3kat" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d">3. Kat</div>
+      <div class="floor-item" data-f="cati" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d">Çatı Katı</div>
+      <div class="floor-item" data-f="garaj" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d">Garaj</div>
+      <div class="floor-item" data-f="bahce" onclick="selFloor(this)" style="padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d">Bahçe</div>
     </div>
     <div class="category">
       <div class="cat-label">Mimari</div>
-      <div class="comp-item" draggable="true" data-type="kapi"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="2" y1="20" x2="2" y2="4" stroke="#c9d1d9" stroke-width="3"/><line x1="2" y1="20" x2="18" y2="20" stroke="#c9d1d9" stroke-width="1.5"/><path d="M2,4 A16,16 0 0,1 18,20" fill="none" stroke="#c9d1d9" stroke-width="1" stroke-dasharray="3,2"/></svg><span class="ci-name">Kapi</span></div>
-      <div class="comp-item" draggable="true" data-type="pencere"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="36" y2="11" stroke="#c9d1d9" stroke-width="4"/><line x1="6" y1="7" x2="6" y2="15" stroke="#58a6ff" stroke-width="1"/><line x1="14" y1="7" x2="14" y2="15" stroke="#58a6ff" stroke-width="1"/><line x1="22" y1="7" x2="22" y2="15" stroke="#58a6ff" stroke-width="1"/><line x1="30" y1="7" x2="30" y2="15" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Pencere</span></div>
-      <div class="comp-item" draggable="true" data-type="merdiven"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="2" width="32" height="18" fill="none" stroke="#8b949e" stroke-width="1"/><line x1="2" y1="7" x2="34" y2="7" stroke="#8b949e" stroke-width="1"/><line x1="2" y1="12" x2="34" y2="12" stroke="#8b949e" stroke-width="1"/><line x1="2" y1="17" x2="34" y2="17" stroke="#8b949e" stroke-width="1"/></svg><span class="ci-name">Merdiven</span></div>
-      <div class="comp-item" draggable="true" data-type="sutun"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="13" y="3" width="10" height="16" fill="#484f58" stroke="#8b949e" stroke-width="1.5"/></svg><span class="ci-name">Sutun</span></div>
+      <div class="comp-item" draggable="true" data-type="h-kapi"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="2" y1="20" x2="2" y2="4" stroke="#c9d1d9" stroke-width="3"/><line x1="2" y1="20" x2="18" y2="20" stroke="#c9d1d9" stroke-width="1.5"/><path d="M2,4 A16,16 0 0,1 18,20" fill="none" stroke="#c9d1d9" stroke-width="1" stroke-dasharray="3,2"/></svg><span class="ci-name">Kapı</span></div>
+      <div class="comp-item" draggable="true" data-type="h-pencere"><svg class="ci-icon" viewBox="0 0 36 22"><line x1="0" y1="11" x2="36" y2="11" stroke="#c9d1d9" stroke-width="4"/><line x1="6" y1="7" x2="6" y2="15" stroke="#58a6ff" stroke-width="1"/><line x1="14" y1="7" x2="14" y2="15" stroke="#58a6ff" stroke-width="1"/><line x1="22" y1="7" x2="22" y2="15" stroke="#58a6ff" stroke-width="1"/><line x1="30" y1="7" x2="30" y2="15" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Pencere</span></div>
+      <div class="comp-item" draggable="true" data-type="h-merdiven"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="2" width="32" height="18" fill="none" stroke="#8b949e" stroke-width="1"/><line x1="2" y1="7" x2="34" y2="7" stroke="#8b949e" stroke-width="1"/><line x1="2" y1="12" x2="34" y2="12" stroke="#8b949e" stroke-width="1"/><line x1="2" y1="17" x2="34" y2="17" stroke="#8b949e" stroke-width="1"/></svg><span class="ci-name">Merdiven</span></div>
+      <div class="comp-item" draggable="true" data-type="h-sutun"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="13" y="3" width="10" height="16" fill="#484f58" stroke="#8b949e" stroke-width="1.5"/></svg><span class="ci-name">Sütun</span></div>
     </div>
     <div class="category">
       <div class="cat-label">Oda Etiketleri</div>
-      <div class="comp-item" draggable="true" data-type="oda-salon"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#79c0ff" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#79c0ff" font-size="7">Salon</text></svg><span class="ci-name">Salon</span></div>
-      <div class="comp-item" draggable="true" data-type="oda-yatak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#d2a8ff" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#d2a8ff" font-size="7">Yatak</text></svg><span class="ci-name">Yatak Odasi</span></div>
-      <div class="comp-item" draggable="true" data-type="oda-mutfak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#7ee787" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#7ee787" font-size="7">Mutfak</text></svg><span class="ci-name">Mutfak</span></div>
-      <div class="comp-item" draggable="true" data-type="oda-banyo"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#58a6ff" font-size="7">Banyo</text></svg><span class="ci-name">Banyo</span></div>
-      <div class="comp-item" draggable="true" data-type="oda-wc"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#f0883e" font-size="7">WC</text></svg><span class="ci-name">WC</span></div>
+      <div class="comp-item" draggable="true" data-type="h-salon"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#79c0ff" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#79c0ff" font-size="7">Salon</text></svg><span class="ci-name">Salon</span></div>
+      <div class="comp-item" draggable="true" data-type="h-yatak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#d2a8ff" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#d2a8ff" font-size="7">Yatak</text></svg><span class="ci-name">Yatak Odası</span></div>
+      <div class="comp-item" draggable="true" data-type="h-mutfak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#7ee787" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#7ee787" font-size="7">Mutfak</text></svg><span class="ci-name">Mutfak</span></div>
+      <div class="comp-item" draggable="true" data-type="h-banyo"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#58a6ff" font-size="7">Banyo</text></svg><span class="ci-name">Banyo</span></div>
+      <div class="comp-item" draggable="true" data-type="h-wc"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/><text x="18" y="14" text-anchor="middle" fill="#f0883e" font-size="7">WC</text></svg><span class="ci-name">WC</span></div>
     </div>
     <div class="category">
       <div class="cat-label">Banyo / WC</div>
-      <div class="comp-item" draggable="true" data-type="kuvvet"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="4" width="32" height="15" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="8"/><circle cx="8" cy="10" r="3" fill="none" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Kuvet</span></div>
-      <div class="comp-item" draggable="true" data-type="dus"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="2" width="28" height="20" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="2"/><circle cx="18" cy="10" r="5" fill="none" stroke="#58a6ff" stroke-width="1.2"/></svg><span class="ci-name">Dus</span></div>
-      <div class="comp-item" draggable="true" data-type="tuvalet"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="2" width="28" height="8" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="2"/><ellipse cx="18" cy="16" rx="12" ry="6" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Tuvalet</span></div>
-      <div class="comp-item" draggable="true" data-type="lavabo"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="4" width="28" height="16" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="4"/><circle cx="18" cy="12" r="5" fill="none" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Lavabo</span></div>
+      <div class="comp-item" draggable="true" data-type="h-kuvet"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="4" width="32" height="14" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="8"/><circle cx="8" cy="10" r="3" fill="none" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Küvet</span></div>
+      <div class="comp-item" draggable="true" data-type="h-dus"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="2" width="28" height="20" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="2"/><circle cx="18" cy="11" r="6" fill="none" stroke="#58a6ff" stroke-width="1.2"/><circle cx="18" cy="11" r="2" fill="none" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Duş</span></div>
+      <div class="comp-item" draggable="true" data-type="h-tuvalet"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="2" width="28" height="8" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="2"/><ellipse cx="18" cy="16" rx="12" ry="6" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Tuvalet</span></div>
+      <div class="comp-item" draggable="true" data-type="h-lavabo"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="4" width="28" height="15" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="5"/><circle cx="18" cy="12" r="5" fill="none" stroke="#58a6ff" stroke-width="1"/><circle cx="18" cy="12" r="1.5" fill="none" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Lavabo</span></div>
     </div>
     <div class="category">
       <div class="cat-label">Mutfak</div>
-      <div class="comp-item" draggable="true" data-type="buzdolabi"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="6" y="1" width="24" height="20" fill="none" stroke="#7ee787" stroke-width="1.5"/><line x1="6" y1="8" x2="30" y2="8" stroke="#7ee787" stroke-width="1"/></svg><span class="ci-name">Buzdolabi</span></div>
-      <div class="comp-item" draggable="true" data-type="ocak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="3" width="28" height="16" fill="none" stroke="#7ee787" stroke-width="1.5"/><circle cx="12" cy="9" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/><circle cx="24" cy="9" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/><circle cx="12" cy="16" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/><circle cx="24" cy="16" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/></svg><span class="ci-name">Ocak</span></div>
-      <div class="comp-item" draggable="true" data-type="evye"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#7ee787" stroke-width="1.5" rx="2"/><rect x="4" y="5" width="13" height="12" fill="none" stroke="#7ee787" stroke-width="1" rx="1"/><rect x="19" y="5" width="13" height="12" fill="none" stroke="#7ee787" stroke-width="1" rx="1"/></svg><span class="ci-name">Evye</span></div>
-      <div class="comp-item" draggable="true" data-type="tezgah"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="6" width="32" height="10" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/></svg><span class="ci-name">Tezgah</span></div>
+      <div class="comp-item" draggable="true" data-type="h-buzdolabi"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="6" y="1" width="24" height="20" fill="none" stroke="#7ee787" stroke-width="1.5"/><line x1="6" y1="8" x2="30" y2="8" stroke="#7ee787" stroke-width="1"/><circle cx="28" cy="5" r="1.5" fill="#7ee787"/><circle cx="28" cy="15" r="1.5" fill="#7ee787"/></svg><span class="ci-name">Buzdolabı</span></div>
+      <div class="comp-item" draggable="true" data-type="h-ocak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="3" width="28" height="16" fill="none" stroke="#7ee787" stroke-width="1.5"/><circle cx="12" cy="9" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/><circle cx="24" cy="9" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/><circle cx="12" cy="16" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/><circle cx="24" cy="16" r="3" fill="none" stroke="#7ee787" stroke-width="1.2"/></svg><span class="ci-name">Ocak</span></div>
+      <div class="comp-item" draggable="true" data-type="h-evye"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#7ee787" stroke-width="1.5" rx="2"/><rect x="4" y="5" width="13" height="12" fill="none" stroke="#7ee787" stroke-width="1" rx="1"/><rect x="19" y="5" width="13" height="12" fill="none" stroke="#7ee787" stroke-width="1" rx="1"/></svg><span class="ci-name">Evye</span></div>
+      <div class="comp-item" draggable="true" data-type="h-tezgah"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="6" width="32" height="10" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/></svg><span class="ci-name">Tezgah</span></div>
     </div>
     <div class="category">
       <div class="cat-label">Mobilya</div>
-      <div class="comp-item" draggable="true" data-type="tek-yatak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#d2a8ff" stroke-width="1.5" rx="2"/><rect x="4" y="5" width="28" height="6" fill="none" stroke="#d2a8ff" stroke-width="1" rx="3"/></svg><span class="ci-name">Tek Yatak</span></div>
-      <div class="comp-item" draggable="true" data-type="cift-yatak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#d2a8ff" stroke-width="1.5" rx="2"/><rect x="3" y="5" width="12" height="6" fill="none" stroke="#d2a8ff" stroke-width="1" rx="3"/><rect x="21" y="5" width="12" height="6" fill="none" stroke="#d2a8ff" stroke-width="1" rx="3"/></svg><span class="ci-name">Cift Yatak</span></div>
-      <div class="comp-item" draggable="true" data-type="kanepe"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="6" width="28" height="12" fill="none" stroke="#f0883e" stroke-width="1.5" rx="3"/><rect x="2" y="8" width="6" height="8" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/><rect x="28" y="8" width="6" height="8" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/></svg><span class="ci-name">Kanepe</span></div>
-      <div class="comp-item" draggable="true" data-type="sandalye"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="8" y="6" width="20" height="14" fill="none" stroke="#c9d1d9" stroke-width="1.5" rx="2"/><rect x="8" y="3" width="20" height="5" fill="none" stroke="#c9d1d9" stroke-width="1.5" rx="2"/></svg><span class="ci-name">Sandalye</span></div>
-      <div class="comp-item" draggable="true" data-type="ymasa"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#c9d1d9" stroke-width="1.5"/></svg><span class="ci-name">Yuvarlak Masa</span></div>
-      <div class="comp-item" draggable="true" data-type="dmasa"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="4" width="32" height="14" fill="none" stroke="#c9d1d9" stroke-width="1.5" rx="1"/></svg><span class="ci-name">Dikd. Masa</span></div>
-      <div class="comp-item" draggable="true" data-type="dolap"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="2" width="32" height="18" fill="none" stroke="#c9d1d9" stroke-width="1.5"/><line x1="18" y1="2" x2="18" y2="20" stroke="#c9d1d9" stroke-width="1"/><circle cx="15" cy="11" r="1.5" fill="#c9d1d9"/><circle cx="21" cy="11" r="1.5" fill="#c9d1d9"/></svg><span class="ci-name">Gardrop</span></div>
-      <div class="comp-item" draggable="true" data-type="tv"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="4" width="32" height="14" fill="none" stroke="#79c0ff" stroke-width="1.5" rx="2"/><text x="18" y="13" text-anchor="middle" fill="#79c0ff" font-size="6">TV</text></svg><span class="ci-name">Televizyon</span></div>
+      <div class="comp-item" draggable="true" data-type="h-tek-yatak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#d2a8ff" stroke-width="1.5" rx="2"/><rect x="4" y="5" width="28" height="6" fill="none" stroke="#d2a8ff" stroke-width="1" rx="3"/></svg><span class="ci-name">Tek Yatak</span></div>
+      <div class="comp-item" draggable="true" data-type="h-cift-yatak"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="3" width="32" height="16" fill="none" stroke="#d2a8ff" stroke-width="1.5" rx="2"/><rect x="3" y="5" width="12" height="6" fill="none" stroke="#d2a8ff" stroke-width="1" rx="3"/><rect x="21" y="5" width="12" height="6" fill="none" stroke="#d2a8ff" stroke-width="1" rx="3"/></svg><span class="ci-name">Çift Yatak</span></div>
+      <div class="comp-item" draggable="true" data-type="h-kanepe"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="6" width="28" height="12" fill="none" stroke="#f0883e" stroke-width="1.5" rx="3"/><rect x="2" y="8" width="6" height="8" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/><rect x="28" y="8" width="6" height="8" fill="none" stroke="#f0883e" stroke-width="1.5" rx="2"/></svg><span class="ci-name">Kanepe</span></div>
+      <div class="comp-item" draggable="true" data-type="h-sandalye"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="8" y="6" width="20" height="14" fill="none" stroke="#c9d1d9" stroke-width="1.5" rx="2"/><rect x="8" y="3" width="20" height="5" fill="none" stroke="#c9d1d9" stroke-width="1.5" rx="2"/></svg><span class="ci-name">Sandalye</span></div>
+      <div class="comp-item" draggable="true" data-type="h-ymasa"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="11" r="9" fill="none" stroke="#c9d1d9" stroke-width="1.5"/></svg><span class="ci-name">Yuvarlak Masa</span></div>
+      <div class="comp-item" draggable="true" data-type="h-dmasa"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="4" width="32" height="14" fill="none" stroke="#c9d1d9" stroke-width="1.5" rx="1"/></svg><span class="ci-name">Dikd. Masa</span></div>
+      <div class="comp-item" draggable="true" data-type="h-dolap"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="2" width="32" height="18" fill="none" stroke="#c9d1d9" stroke-width="1.5"/><line x1="18" y1="2" x2="18" y2="20" stroke="#c9d1d9" stroke-width="1"/><circle cx="15" cy="11" r="1.5" fill="#c9d1d9"/><circle cx="21" cy="11" r="1.5" fill="#c9d1d9"/></svg><span class="ci-name">Gardırop</span></div>
+      <div class="comp-item" draggable="true" data-type="h-tv"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="4" width="32" height="14" fill="none" stroke="#79c0ff" stroke-width="1.5" rx="2"/><text x="18" y="13" text-anchor="middle" fill="#79c0ff" font-size="6">TV</text></svg><span class="ci-name">Televizyon</span></div>
+      <div class="comp-item" draggable="true" data-type="h-camasir"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="4" y="2" width="28" height="18" fill="none" stroke="#58a6ff" stroke-width="1.5" rx="2"/><circle cx="18" cy="13" r="6" fill="none" stroke="#58a6ff" stroke-width="1.5"/><circle cx="18" cy="13" r="2.5" fill="none" stroke="#58a6ff" stroke-width="1"/><circle cx="10" cy="5" r="1.5" fill="none" stroke="#58a6ff" stroke-width="1"/></svg><span class="ci-name">Çam. Makinesi</span></div>
     </div>
     <div class="category">
-      <div class="cat-label">Dis Alan</div>
-      <div class="comp-item" draggable="true" data-type="araba"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="6" width="32" height="12" fill="none" stroke="#8b949e" stroke-width="1.5" rx="4"/><rect x="6" y="3" width="24" height="7" fill="none" stroke="#8b949e" stroke-width="1" rx="2"/><circle cx="8" cy="19" r="2.5" fill="#484f58" stroke="#8b949e" stroke-width="1"/><circle cx="28" cy="19" r="2.5" fill="#484f58" stroke="#8b949e" stroke-width="1"/></svg><span class="ci-name">Araba</span></div>
-      <div class="comp-item" draggable="true" data-type="agac"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="9" r="8" fill="none" stroke="#7ee787" stroke-width="1.5"/><line x1="18" y1="17" x2="18" y2="21" stroke="#7ee787" stroke-width="2"/></svg><span class="ci-name">Agac</span></div>
-      <div class="comp-item" draggable="true" data-type="havuz"><svg class="ci-icon" viewBox="0 0 36 22"><ellipse cx="18" cy="11" rx="14" ry="8" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Havuz</span></div>
+      <div class="cat-label">Dış Alan</div>
+      <div class="comp-item" draggable="true" data-type="h-araba"><svg class="ci-icon" viewBox="0 0 36 22"><rect x="2" y="6" width="32" height="12" fill="none" stroke="#8b949e" stroke-width="1.5" rx="4"/><rect x="6" y="3" width="24" height="7" fill="none" stroke="#8b949e" stroke-width="1" rx="2"/><circle cx="8" cy="19" r="2.5" fill="#484f58" stroke="#8b949e" stroke-width="1"/><circle cx="28" cy="19" r="2.5" fill="#484f58" stroke="#8b949e" stroke-width="1"/></svg><span class="ci-name">Araba</span></div>
+      <div class="comp-item" draggable="true" data-type="h-agac"><svg class="ci-icon" viewBox="0 0 36 22"><circle cx="18" cy="9" r="8" fill="none" stroke="#7ee787" stroke-width="1.5"/><line x1="18" y1="17" x2="18" y2="21" stroke="#7ee787" stroke-width="2"/></svg><span class="ci-name">Ağaç</span></div>
+      <div class="comp-item" draggable="true" data-type="h-havuz"><svg class="ci-icon" viewBox="0 0 36 22"><ellipse cx="18" cy="11" rx="14" ry="8" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg><span class="ci-name">Havuz</span></div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas-wrap">
+    <canvas id="grid-bg"></canvas>
+    <svg id="main-svg" xmlns="http://www.w3.org/2000/svg">
+      <g id="wires-g"></g>
+      <g id="comps-g"></g>
+      <g id="sel-g"></g>
+    </svg>
+  </div>
+
+  <!-- PROPERTIES -->
+  <div id="props">
+    <h2>Özellikler</h2>
+    <div id="no-sel" class="no-sel">Bir bileşen seçin veya soldan sürükleyin.</div>
+    <div id="prop-form" style="display:none">
+      <div class="prop-row">
+        <div class="prop-lbl">Etiket</div>
+        <input class="prop-inp" id="p-label" type="text" placeholder="örn. L1" oninput="applyProp('label',this.value)">
+      </div>
+      <div class="prop-row">
+        <div class="prop-lbl">Değer</div>
+        <input class="prop-inp" id="p-value" type="text" placeholder="örn. 10kΩ" oninput="applyProp('value',this.value)">
+      </div>
+      <div class="prop-row">
+        <div class="prop-lbl">Renk</div>
+        <input class="prop-inp" id="p-color" type="color" value="#58a6ff" onchange="applyProp('color',this.value)">
+      </div>
+      <button class="prop-btn" onclick="rotateComp()">↻ Döndür (90°)</button>
+      <button class="prop-btn" onclick="flipComp()">↔ Yansıt</button>
+      <button class="prop-btn danger" onclick="deleteSelected()">✕ Sil</button>
     </div>
   </div>
 </div>
-<div id="canvas-wrap">
-  <canvas id="grid-bg"></canvas>
-  <svg id="main-svg" xmlns="http://www.w3.org/2000/svg">
-    <g id="wires-g"></g>
-    <g id="comps-g"></g>
-  </svg>
-</div>
-<div id="props">
-  <h2>Ozellikler</h2>
-  <div id="no-sel" class="no-sel">Bir bilesen secin veya soldan surukleyin.</div>
-  <div id="prop-form" style="display:none">
-    <div class="prop-row"><div class="prop-lbl">Etiket</div><input class="prop-inp" id="p-label" type="text" placeholder="L1" oninput="applyProp('label',this.value)"></div>
-    <div class="prop-row"><div class="prop-lbl">Deger</div><input class="prop-inp" id="p-value" type="text" placeholder="10k" oninput="applyProp('value',this.value)"></div>
-    <div class="prop-row"><div class="prop-lbl">Renk</div><input class="prop-inp" id="p-color" type="color" value="#58a6ff" onchange="applyProp('color',this.value)"></div>
-    <button class="prop-btn" onclick="rotateComp()">&#8635; Dondur 90</button>
-    <button class="prop-btn" onclick="flipComp()">&#8596; Yansit</button>
-    <button class="prop-btn danger" onclick="deleteSelected()">&#10005; Sil</button>
-  </div>
-  <div id="wall-form" style="display:none">
-    <div class="prop-row"><div class="prop-lbl">Kalinlik</div><input class="prop-inp" id="p-wt" type="range" min="4" max="40" value="10" oninput="applyWall('thick',+this.value);document.getElementById('p-wt-v').textContent=this.value+'px'"><span id="p-wt-v" style="font-size:10px;color:#8b949e">10px</span></div>
-    <div class="prop-row"><div class="prop-lbl">Renk</div><input class="prop-inp" id="p-wc" type="color" value="#c9d1d9" onchange="applyWall('color',this.value)"></div>
-    <button class="prop-btn danger" onclick="deleteSelected()">&#10005; Sil</button>
-  </div>
-</div>
-</div>
+
+<!-- STATUS -->
 <div id="statusbar">
-  <span id="st-tool">Arac: Sec</span>
+  <span id="st-tool">Araç: Seç</span>
   <span id="st-xy">X: 0  Y: 0</span>
-  <span id="st-cnt">Bilesen: 0</span>
+  <span id="st-cnt">Bileşen: 0  Kablo: 0</span>
+  <span id="st-mode" style="margin-left:auto;color:#f0883e">⚡ Elektrik</span>
   <span id="st-zoom">Zoom: 100%</span>
-  <span id="st-mode" style="margin-left:auto;color:#f0883e">&#9889; Elektrik Semasi</span>
 </div>
+
+<!-- TOOLTIP -->
 <div id="tip"></div>
+
+<!-- HELP MODAL -->
 <div id="modal-overlay">
   <div id="modal">
-    <h3>Klavye Kisayollari</h3>
-    <p><b>S</b> Sec &nbsp; <b>W</b> Kablo/Duvar &nbsp; <b>D</b> Sil<br><b>Delete</b> Secili sil &nbsp; <b>R</b> Dondur<br><b>Esc</b> Iptal &nbsp; <b>Ctrl+Z</b> Geri al<br><b>Tekerlek</b> Zoom &nbsp; <b>Alt+Surukle</b> Kaydir<br><br>Sekmelerle Elektrik ve Ev Plani arasinda gecis yap.</p>
-    <div id="modal-btns"><button class="tool-btn" onclick="document.getElementById('modal-overlay').classList.remove('show')">Tamam</button></div>
+    <h3>⚡ Klavye Kısayolları</h3>
+    <p>
+      <b>S</b> — Seç aracı<br>
+      <b>W</b> — Kablo çiz<br>
+      <b>D</b> — Sil aracı<br>
+      <b>Delete / Backspace</b> — Seçili öğeyi sil<br>
+      <b>R</b> — Seçili bileşeni döndür<br>
+      <b>Esc</b> — İptal / Seçimi kaldır<br>
+      <b>Ctrl+Z</b> — Geri al<br>
+      <b>Tekerlek</b> — Zoom<br>
+      <b>Alt + Sürükle</b> — Pan (Kaydır)<br><br>
+      Bileşen eklemek için soldan sürükleyin veya çift tıklayın.
+    </p>
+    <div id="modal-btns">
+      <button class="tool-btn" onclick="document.getElementById('modal-overlay').classList.remove('show')">Tamam</button>
+    </div>
   </div>
 </div>
+
 <script>
-var mode='electric',selId=null,tool='select';
-var vx=0,vy=0,vscale=1;
-var isDrag=false,dragOff={x:0,y:0};
-var isPan=false,panStart={x:0,y:0};
-var wireFrom=null,tempLine=null;
-var uid=1,history=[];
-var dragType=null;
-var data={electric:{comps:[],wires:[]},house:{comps:[],wires:[]}};
-var SVG=document.getElementById('main-svg');
-var wiresG=document.getElementById('wires-g');
-var compsG=document.getElementById('comps-g');
-var GRID=20;
+// =====================================================
+// MOD SİSTEMİ
+// =====================================================
+let appMode = 'e'; // 'e'=elektrik, 'h'=ev
+const modeData = { e:{comps:[],wires:[]}, h:{comps:[],wires:[]} };
 
-function switchMode(m){
-  mode=m;selId=null;
-  if(wireFrom){wireFrom=null;if(tempLine){tempLine.remove();tempLine=null;}}
-  document.getElementById('tab-electric').classList.toggle('active',m==='electric');
-  document.getElementById('tab-house').classList.toggle('active',m==='house');
-  document.getElementById('panel-e').style.display=m==='electric'?'block':'none';
-  document.getElementById('panel-h').style.display=m==='house'?'block':'none';
-  document.getElementById('tools-e').style.display=m==='electric'?'flex':'none';
-  document.getElementById('tools-h').style.display=m==='house'?'flex':'none';
-  document.getElementById('tb-title').textContent=m==='electric'?'ELEKTRIK':'EV PLANI';
-  document.getElementById('st-mode').textContent=m==='electric'?'Elektrik Semasi':'Ev Plani';
-  setTool('select');renderAll();updateProps();
+function switchMode(m) {
+  appMode = m;
+  comps = modeData[m].comps;
+  wires = modeData[m].wires;
+  selId = null;
+  document.getElementById('tab-e').style.cssText = m==='e'
+    ? 'padding:7px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid #f0883e;margin-bottom:-2px;color:#f0883e;background:#161b22'
+    : 'padding:7px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:#8b949e';
+  document.getElementById('tab-h').style.cssText = m==='h'
+    ? 'padding:7px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid #f0883e;margin-bottom:-2px;color:#f0883e;background:#161b22'
+    : 'padding:7px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:#8b949e';
+  document.getElementById('sidebar').querySelector('.sidebar-title').style.display = m==='e' ? 'block' : 'none';
+  document.querySelectorAll('#sidebar .category').forEach(c => c.style.display = m==='e' ? 'block' : 'none');
+  document.getElementById('panel-house').style.display = m==='h' ? 'block' : 'none';
+  document.getElementById('tb-wire-btn').style.display = m==='e' ? 'inline' : 'none';
+  document.getElementById('tb-wall-btn').style.display = m==='h' ? 'inline' : 'none';
+  document.getElementById('tb-floor-badge').style.display = m==='h' ? 'inline' : 'none';
+  document.getElementById('tb-title').textContent = m==='e' ? '⚡ ELEKTRİK ÇİZİM' : '🏠 EV PLANI';
+  document.getElementById('st-mode').textContent = m==='e' ? '⚡ Elektrik' : '🏠 Ev Planı';
+  setTool('select');
+  renderAll();
+  updateProps();
 }
 
-function selectFloor(el){
-  document.querySelectorAll('.floor-item').forEach(function(x){x.classList.remove('active');});
-  el.classList.add('active');
-  document.getElementById('tb-floor').textContent=el.textContent.trim();
+function selFloor(el) {
+  document.querySelectorAll('.floor-item').forEach(x => {
+    x.style.cssText = 'padding:6px 14px;cursor:pointer;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d';
+  });
+  el.style.cssText = 'padding:6px 14px;cursor:pointer;font-size:12px;color:#f0883e;font-weight:600;border-bottom:1px solid #21262d;border-left:3px solid #f0883e;background:#f0883e11';
+  document.getElementById('tb-floor-badge').textContent = el.textContent.trim();
 }
 
-var EDEFS={
-  sigorta:{name:'Sigorta',W:64,H:32,color:'#f0883e',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'rect',{x:-20,y:-10,width:40,height:20,fill:'none',stroke:c,'stroke-width':2});wl(g,-32,0,-20,0,c);wl(g,20,0,32,0,c);ns(g,'line',{x1:-14,y1:-10,x2:14,y2:10,stroke:c,'stroke-width':1.5});}},
-  anahtar:{name:'Anahtar',W:64,H:32,color:'#58a6ff',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){wl(g,-32,0,-14,0,c);ns(g,'circle',{cx:-14,cy:0,r:3,fill:c});ns(g,'line',{x1:-14,y1:0,x2:14,y2:-12,stroke:c,'stroke-width':2});ns(g,'circle',{cx:14,cy:0,r:3,fill:'none',stroke:c,'stroke-width':2});wl(g,14,0,32,0,c);}},
-  lamba:{name:'Lamba',W:64,H:48,color:'#ffd700',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:16,fill:'none',stroke:c,'stroke-width':2});ns(g,'line',{x1:-11,y1:-11,x2:11,y2:11,stroke:c,'stroke-width':2});ns(g,'line',{x1:11,y1:-11,x2:-11,y2:11,stroke:c,'stroke-width':2});wl(g,-32,0,-16,0,'#58a6ff');wl(g,16,0,32,0,'#58a6ff');}},
-  priz:{name:'Priz',W:64,H:48,color:'#58a6ff',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:16,fill:'none',stroke:c,'stroke-width':2});wl(g,-6,-7,-6,7,c);wl(g,6,-7,6,7,c);wl(g,-32,0,-16,0,c);wl(g,16,0,32,0,c);}},
-  otomat:{name:'Otomat',W:60,H:48,color:'#f0883e',ports:[{x:-30,y:0},{x:30,y:0}],draw:function(g,c){ns(g,'rect',{x:-16,y:-20,width:32,height:40,fill:'none',stroke:c,'stroke-width':2,rx:3});wl(g,-30,0,-16,0,'#58a6ff');wl(g,16,0,30,0,'#58a6ff');tx(g,0,4,'OT',c,10,'bold');}},
-  kesici:{name:'Guc Kesici',W:64,H:32,color:'#f85149',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){wl(g,-32,0,-18,0,'#58a6ff');ns(g,'rect',{x:-18,y:-12,width:36,height:24,fill:'none',stroke:c,'stroke-width':2});ns(g,'line',{x1:-12,y1:-8,x2:12,y2:8,stroke:c,'stroke-width':2});wl(g,18,0,32,0,'#58a6ff');}},
-  topraklama:{name:'Topraklama',W:40,H:48,color:'#58a6ff',ports:[{x:0,y:-24}],draw:function(g,c){wl(g,0,-24,0,0,c);ns(g,'line',{x1:-18,y1:0,x2:18,y2:0,stroke:c,'stroke-width':2.5});ns(g,'line',{x1:-12,y1:7,x2:12,y2:7,stroke:c,'stroke-width':2});ns(g,'line',{x1:-6,y1:13,x2:6,y2:13,stroke:c,'stroke-width':1.5});}},
-  motor:{name:'Motor',W:64,H:56,color:'#7ee787',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2});tx(g,0,6,'M',c,16,'bold');wl(g,-32,0,-20,0,'#58a6ff');wl(g,20,0,32,0,'#58a6ff');}},
-  jenerator:{name:'Jenerator',W:64,H:56,color:'#79c0ff',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2});tx(g,0,6,'G',c,16,'bold');wl(g,-32,0,-20,0,'#58a6ff');wl(g,20,0,32,0,'#58a6ff');}},
-  trafo:{name:'Trafo',W:80,H:50,color:'#d2a8ff',ports:[{x:-40,y:0},{x:40,y:0}],draw:function(g,c){ns(g,'path',{d:'M-38,0 Q-32,-14 -26,0 Q-20,-14 -14,0 Q-8,-14 -2,0',fill:'none',stroke:c,'stroke-width':2});ns(g,'path',{d:'M2,0 Q8,14 14,0 Q20,14 26,0 Q32,14 38,0',fill:'none',stroke:c,'stroke-width':2});wl(g,-40,0,-38,0,'#58a6ff');wl(g,38,0,40,0,'#58a6ff');}},
-  direnc:{name:'Direnc',W:64,H:32,color:'#f0883e',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){wl(g,-32,0,-20,0,'#58a6ff');ns(g,'polyline',{points:'-20,0 -16,-11 -10,11 -4,-11 2,11 8,-11 14,11 20,0',fill:'none',stroke:c,'stroke-width':2});wl(g,20,0,32,0,'#58a6ff');}},
-  kondansator:{name:'Kondansator',W:64,H:40,color:'#58a6ff',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){wl(g,-32,0,-8,0,c);ns(g,'line',{x1:-8,y1:-16,x2:-8,y2:16,stroke:c,'stroke-width':3});ns(g,'line',{x1:8,y1:-16,x2:8,y2:16,stroke:c,'stroke-width':3});wl(g,8,0,32,0,c);}},
-  bobin:{name:'Bobin',W:72,H:32,color:'#d2a8ff',ports:[{x:-36,y:0},{x:36,y:0}],draw:function(g,c){wl(g,-36,0,-28,0,'#58a6ff');ns(g,'path',{d:'M-28,0 Q-23,-13 -18,0 Q-13,-13 -8,0 Q-3,-13 2,0 Q7,-13 12,0 Q17,-13 22,0 Q27,-13 28,0',fill:'none',stroke:c,'stroke-width':2});wl(g,28,0,36,0,'#58a6ff');}},
-  diyot:{name:'Diyot',W:64,H:40,color:'#f0883e',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){wl(g,-32,0,-16,0,'#58a6ff');ns(g,'polygon',{points:'-16,-14 -16,14 16,0',fill:c,stroke:c,'stroke-width':1});ns(g,'line',{x1:16,y1:-14,x2:16,y2:14,stroke:c,'stroke-width':2.5});wl(g,16,0,32,0,'#58a6ff');}},
-  pil:{name:'Pil',W:72,H:40,color:'#58a6ff',ports:[{x:-36,y:0},{x:36,y:0}],draw:function(g,c){wl(g,-36,0,-14,0,c);ns(g,'line',{x1:-14,y1:-14,x2:-14,y2:14,stroke:c,'stroke-width':3});ns(g,'line',{x1:-6,y1:-8,x2:-6,y2:8,stroke:c,'stroke-width':1.5});ns(g,'line',{x1:6,y1:-14,x2:6,y2:14,stroke:c,'stroke-width':3});ns(g,'line',{x1:14,y1:-8,x2:14,y2:8,stroke:c,'stroke-width':1.5});wl(g,14,0,36,0,c);}},
-  ac:{name:'AC Kaynak',W:64,H:56,color:'#f0883e',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2});ns(g,'path',{d:'M-12,0 Q-6,-12 0,0 Q6,12 12,0',fill:'none',stroke:c,'stroke-width':2});wl(g,-32,0,-20,0,'#58a6ff');wl(g,20,0,32,0,'#58a6ff');}},
-  dc:{name:'DC Kaynak',W:64,H:56,color:'#58a6ff',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2});tx(g,0,-3,'DC',c,9,'bold');ns(g,'line',{x1:-9,y1:7,x2:9,y2:7,stroke:c,'stroke-width':2});wl(g,-32,0,-20,0,'#58a6ff');wl(g,20,0,32,0,'#58a6ff');}},
-  voltmetre:{name:'Voltmetre',W:64,H:56,color:'#7ee787',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2});tx(g,0,7,'V',c,16,'bold');wl(g,-32,0,-20,0,'#58a6ff');wl(g,20,0,32,0,'#58a6ff');}},
-  ampermetre:{name:'Ampermetre',W:64,H:56,color:'#f85149',ports:[{x:-32,y:0},{x:32,y:0}],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2});tx(g,0,7,'A',c,16,'bold');wl(g,-32,0,-20,0,'#58a6ff');wl(g,20,0,32,0,'#58a6ff');}}
+// =====================================================
+// STATE
+// =====================================================
+let comps = modeData.e.comps;
+let wires = modeData.e.wires;
+let selId = null;
+let tool = 'select';
+let vx = 0, vy = 0, vscale = 1;
+let isDrag = false, dragOff = {x:0,y:0};
+let isPan = false, panStart = {x:0,y:0};
+let wireFrom = null;
+let tempLine = null;
+let uid = 1;
+const GRID = 20;
+let history = [];
+let dragType = null;
+
+const SVG = document.getElementById('main-svg');
+const wiresG = document.getElementById('wires-g');
+const compsG = document.getElementById('comps-g');
+
+// =====================================================
+// COMPONENT DEFINITIONS
+// =====================================================
+const DEFS = {
+  sigorta: {
+    name:'Sigorta', W:64, H:32, color:'#f0883e',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'rect',{x:-20,y:-10,width:40,height:20,fill:'none',stroke:c,'stroke-width':2}); wire(g,-32,0,-20,0,c); wire(g,20,0,32,0,c); ns(g,'line',{x1:-14,y1:-10,x2:14,y2:10,stroke:c,'stroke-width':1.5}); }
+  },
+  anahtar: {
+    name:'Anahtar', W:64, H:32, color:'#58a6ff',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ wire(g,-32,0,-14,0,c); ns(g,'circle',{cx:-14,cy:0,r:3,fill:c}); ns(g,'line',{x1:-14,y1:0,x2:14,y2:-12,stroke:c,'stroke-width':2}); ns(g,'circle',{cx:14,cy:0,r:3,fill:'none',stroke:c,'stroke-width':2}); wire(g,14,0,32,0,c); }
+  },
+  lamba: {
+    name:'Lamba', W:64, H:48, color:'#ffd700',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:16,fill:'none',stroke:c,'stroke-width':2}); ns(g,'line',{x1:-11,y1:-11,x2:11,y2:11,stroke:c,'stroke-width':2}); ns(g,'line',{x1:11,y1:-11,x2:-11,y2:11,stroke:c,'stroke-width':2}); wire(g,-32,0,-16,0,'#58a6ff'); wire(g,16,0,32,0,'#58a6ff'); }
+  },
+  priz: {
+    name:'Priz', W:64, H:48, color:'#58a6ff',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:16,fill:'none',stroke:c,'stroke-width':2}); wire(g,-6,-7,-6,7,c); wire(g,6,-7,6,7,c); wire(g,-32,0,-16,0,c); wire(g,16,0,32,0,c); }
+  },
+  otomat: {
+    name:'Otomat Sigorta', W:60, H:48, color:'#f0883e',
+    ports:[{x:-30,y:0},{x:30,y:0}],
+    draw(g,c){ ns(g,'rect',{x:-16,y:-20,width:32,height:40,fill:'none',stroke:c,'stroke-width':2,rx:3}); wire(g,-30,0,-16,0,'#58a6ff'); wire(g,16,0,30,0,'#58a6ff'); txt(g,0,4,'OT',c,10,'bold'); }
+  },
+  kesici: {
+    name:'Güç Kesici', W:64, H:32, color:'#f85149',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ wire(g,-32,0,-18,0,'#58a6ff'); ns(g,'rect',{x:-18,y:-12,width:36,height:24,fill:'none',stroke:c,'stroke-width':2}); ns(g,'line',{x1:-12,y1:-8,x2:12,y2:8,stroke:c,'stroke-width':2}); wire(g,18,0,32,0,'#58a6ff'); }
+  },
+  topraklama: {
+    name:'Topraklama', W:40, H:48, color:'#58a6ff',
+    ports:[{x:0,y:-24}],
+    draw(g,c){ wire(g,0,-24,0,0,c); ns(g,'line',{x1:-18,y1:0,x2:18,y2:0,stroke:c,'stroke-width':2.5}); ns(g,'line',{x1:-12,y1:7,x2:12,y2:7,stroke:c,'stroke-width':2}); ns(g,'line',{x1:-6,y1:13,x2:6,y2:13,stroke:c,'stroke-width':1.5}); }
+  },
+  role: {
+    name:'Röle', W:64, H:40, color:'#7ee787',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'rect',{x:-18,y:-16,width:36,height:32,fill:'none',stroke:c,'stroke-width':2,rx:3}); wire(g,-32,0,-18,0,'#58a6ff'); wire(g,18,0,32,0,'#58a6ff'); txt(g,0,4,'RÖ',c,10,'bold'); }
+  },
+  motor: {
+    name:'Motor', W:64, H:56, color:'#7ee787',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2}); txt(g,0,6,'M',c,16,'bold'); wire(g,-32,0,-20,0,'#58a6ff'); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  jenerator: {
+    name:'Jeneratör', W:64, H:56, color:'#79c0ff',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2}); txt(g,0,6,'G',c,16,'bold'); wire(g,-32,0,-20,0,'#58a6ff'); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  trafo: {
+    name:'Transformatör', W:80, H:50, color:'#d2a8ff',
+    ports:[{x:-40,y:0},{x:40,y:0}],
+    draw(g,c){ ns(g,'path',{d:'M-38,0 Q-32,-14 -26,0 Q-20,-14 -14,0 Q-8,-14 -2,0',fill:'none',stroke:c,'stroke-width':2}); ns(g,'path',{d:'M2,0 Q8,14 14,0 Q20,14 26,0 Q32,14 38,0',fill:'none',stroke:c,'stroke-width':2}); ns(g,'line',{x1:0,y1:-16,x2:0,y2:16,stroke:'#484f58','stroke-width':1,'stroke-dasharray':'3,2'}); wire(g,-40,0,-38,0,'#58a6ff'); wire(g,38,0,40,0,'#58a6ff'); }
+  },
+  'direnç': {
+    name:'Direnç', W:64, H:32, color:'#f0883e',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ wire(g,-32,0,-20,0,'#58a6ff'); ns(g,'polyline',{points:'-20,0 -16,-11 -10,11 -4,-11 2,11 8,-11 14,11 20,0',fill:'none',stroke:c,'stroke-width':2}); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  kondansator: {
+    name:'Kondansatör', W:64, H:40, color:'#58a6ff',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ wire(g,-32,0,-8,0,c); ns(g,'line',{x1:-8,y1:-16,x2:-8,y2:16,stroke:c,'stroke-width':3}); ns(g,'line',{x1:8,y1:-16,x2:8,y2:16,stroke:c,'stroke-width':3}); wire(g,8,0,32,0,c); }
+  },
+  bobin: {
+    name:'Bobin', W:72, H:32, color:'#d2a8ff',
+    ports:[{x:-36,y:0},{x:36,y:0}],
+    draw(g,c){ wire(g,-36,0,-28,0,'#58a6ff'); ns(g,'path',{d:'M-28,0 Q-23,-13 -18,0 Q-13,-13 -8,0 Q-3,-13 2,0 Q7,-13 12,0 Q17,-13 22,0 Q27,-13 28,0',fill:'none',stroke:c,'stroke-width':2}); wire(g,28,0,36,0,'#58a6ff'); }
+  },
+  pil: {
+    name:'Pil / Batarya', W:72, H:40, color:'#58a6ff',
+    ports:[{x:-36,y:0},{x:36,y:0}],
+    draw(g,c){ wire(g,-36,0,-14,0,c); ns(g,'line',{x1:-14,y1:-14,x2:-14,y2:14,stroke:c,'stroke-width':3}); ns(g,'line',{x1:-6,y1:-8,x2:-6,y2:8,stroke:c,'stroke-width':1.5}); ns(g,'line',{x1:6,y1:-14,x2:6,y2:14,stroke:c,'stroke-width':3}); ns(g,'line',{x1:14,y1:-8,x2:14,y2:8,stroke:c,'stroke-width':1.5}); wire(g,14,0,36,0,c); txt(g,-20,-16,'+','#f85149',8); txt(g,20,-16,'−','#58a6ff',10); }
+  },
+  diyot: {
+    name:'Diyot', W:64, H:40, color:'#f0883e',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ wire(g,-32,0,-16,0,'#58a6ff'); ns(g,'polygon',{points:'-16,-14 -16,14 16,0',fill:c,stroke:c,'stroke-width':1}); ns(g,'line',{x1:16,y1:-14,x2:16,y2:14,stroke:c,'stroke-width':2.5}); wire(g,16,0,32,0,'#58a6ff'); }
+  },
+  'ac-kaynak': {
+    name:'AC Kaynak', W:64, H:56, color:'#f0883e',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2}); ns(g,'path',{d:'M-12,0 Q-6,-12 0,0 Q6,12 12,0',fill:'none',stroke:c,'stroke-width':2}); wire(g,-32,0,-20,0,'#58a6ff'); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  'dc-kaynak': {
+    name:'DC Kaynak', W:64, H:56, color:'#58a6ff',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2}); txt(g,0,-3,'DC',c,9,'bold'); ns(g,'line',{x1:-9,y1:7,x2:9,y2:7,stroke:c,'stroke-width':2}); ns(g,'line',{x1:0,y1:4,x2:0,y2:11,stroke:c,'stroke-width':2}); wire(g,-32,0,-20,0,'#58a6ff'); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  voltmetre: {
+    name:'Voltmetre', W:64, H:56, color:'#7ee787',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2}); txt(g,0,7,'V',c,16,'bold'); wire(g,-32,0,-20,0,'#58a6ff'); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  ampermetre: {
+    name:'Ampermetre', W:64, H:56, color:'#f85149',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2}); txt(g,0,7,'A',c,16,'bold'); wire(g,-32,0,-20,0,'#58a6ff'); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  wattmetre: {
+    name:'Wattmetre', W:64, H:56, color:'#d2a8ff',
+    ports:[{x:-32,y:0},{x:32,y:0}],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:20,fill:'none',stroke:c,'stroke-width':2}); txt(g,0,7,'W',c,16,'bold'); wire(g,-32,0,-20,0,'#58a6ff'); wire(g,20,0,32,0,'#58a6ff'); }
+  },
+  bara: {
+    name:'Bara (Busbar)', W:120, H:32, color:'#8b949e',
+    ports:[{x:-40,y:-12},{x:-13,y:-12},{x:13,y:-12},{x:40,y:-12}],
+    draw(g,c){ ns(g,'rect',{x:-60,y:-6,width:120,height:12,fill:'#21262d',stroke:c,'stroke-width':1.5}); [-40,-13,13,40].forEach(x=>wire(g,x,-18,x,-6,'#58a6ff')); }
+  },
+  metin: {
+    name:'Metin Kutusu', W:100, H:44, color:'#8b949e',
+    ports:[],
+    draw(g,c){ ns(g,'rect',{x:-50,y:-22,width:100,height:44,fill:'rgba(22,27,34,0.6)',stroke:c,'stroke-width':1,'stroke-dasharray':'5,3',rx:4}); txt(g,0,4,'Metin',c,11); }
+  },
+  // ---- EV PLANI BİLEŞENLERİ ----
+  'h-kapi':{ name:'Kapı', W:50, H:50, color:'#c9d1d9', ports:[],
+    draw(g,c){ ns(g,'line',{x1:-25,y1:25,x2:-25,y2:-25,stroke:c,'stroke-width':4,'stroke-linecap':'square'}); ns(g,'line',{x1:-25,y1:25,x2:25,y2:25,stroke:c,'stroke-width':1.5}); ns(g,'path',{d:'M-25,-25 A50,50 0 0,1 25,25',fill:'none',stroke:c,'stroke-width':1,'stroke-dasharray':'4,3'}); }},
+  'h-pencere':{ name:'Pencere', W:60, H:20, color:'#c9d1d9', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-30,y:-8,width:60,height:16,fill:'rgba(88,166,255,0.1)',stroke:c,'stroke-width':3}); [-16,-4,8,20].forEach(x=>ns(g,'line',{x1:x,y1:-8,x2:x,y2:8,stroke:'#58a6ff','stroke-width':1})); }},
+  'h-merdiven':{ name:'Merdiven', W:80, H:60, color:'#8b949e', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-40,y:-30,width:80,height:60,fill:'none',stroke:c,'stroke-width':1.5}); for(let i=-20;i<=20;i+=10)ns(g,'line',{x1:-40,y1:i,x2:40,y2:i,stroke:c,'stroke-width':1}); txt(g,0,-22,'↑',c,14); }},
+  'h-sutun':{ name:'Sütun', W:30, H:30, color:'#8b949e', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-15,y:-15,width:30,height:30,fill:'#21262d',stroke:c,'stroke-width':2}); }},
+  'h-salon':{ name:'Salon', W:90, H:50, color:'#79c0ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-45,y:-25,width:90,height:50,fill:'rgba(121,192,255,0.08)',stroke:c,'stroke-width':1.5,rx:3}); txt(g,0,5,'SALON',c,11,'bold'); }},
+  'h-yatak':{ name:'Yatak Odası', W:90, H:50, color:'#d2a8ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-45,y:-25,width:90,height:50,fill:'rgba(210,168,255,0.08)',stroke:c,'stroke-width':1.5,rx:3}); txt(g,0,5,'YATAK',c,11,'bold'); }},
+  'h-mutfak':{ name:'Mutfak', W:90, H:50, color:'#7ee787', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-45,y:-25,width:90,height:50,fill:'rgba(126,231,135,0.08)',stroke:c,'stroke-width':1.5,rx:3}); txt(g,0,5,'MUTFAK',c,11,'bold'); }},
+  'h-banyo':{ name:'Banyo', W:70, H:50, color:'#58a6ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-35,y:-25,width:70,height:50,fill:'rgba(88,166,255,0.08)',stroke:c,'stroke-width':1.5,rx:3}); txt(g,0,5,'BANYO',c,11,'bold'); }},
+  'h-wc':{ name:'WC', W:50, H:40, color:'#f0883e', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-25,y:-20,width:50,height:40,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:3}); txt(g,0,5,'WC',c,11,'bold'); }},
+  'h-kuvet':{ name:'Küvet', W:90, H:44, color:'#58a6ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-45,y:-20,width:90,height:40,fill:'rgba(88,166,255,0.08)',stroke:c,'stroke-width':1.5,rx:16}); ns(g,'circle',{cx:-32,cy:-8,r:6,fill:'none',stroke:c,'stroke-width':1.5}); }},
+  'h-dus':{ name:'Duş', W:60, H:60, color:'#58a6ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-30,y:-30,width:60,height:60,fill:'rgba(88,166,255,0.05)',stroke:c,'stroke-width':1.5,rx:3}); ns(g,'circle',{cx:0,cy:0,r:14,fill:'none',stroke:c,'stroke-width':1.5}); ns(g,'circle',{cx:0,cy:0,r:4,fill:'none',stroke:c,'stroke-width':1}); }},
+  'h-tuvalet':{ name:'Tuvalet', W:44, H:56, color:'#58a6ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-22,y:-28,width:44,height:16,fill:'rgba(88,166,255,0.08)',stroke:c,'stroke-width':1.5,rx:2}); ns(g,'ellipse',{cx:0,cy:8,rx:18,ry:20,fill:'rgba(88,166,255,0.06)',stroke:c,'stroke-width':1.5}); }},
+  'h-lavabo':{ name:'Lavabo', W:50, H:44, color:'#58a6ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-25,y:-20,width:50,height:40,fill:'rgba(88,166,255,0.06)',stroke:c,'stroke-width':1.5,rx:8}); ns(g,'circle',{cx:0,cy:2,r:10,fill:'none',stroke:c,'stroke-width':1.2}); ns(g,'circle',{cx:0,cy:2,r:3,fill:'none',stroke:c,'stroke-width':1}); }},
+  'h-buzdolabi':{ name:'Buzdolabı', W:44, H:70, color:'#7ee787', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-22,y:-35,width:44,height:70,fill:'rgba(126,231,135,0.06)',stroke:c,'stroke-width':1.5,rx:3}); ns(g,'line',{x1:-22,y1:-5,x2:22,y2:-5,stroke:c,'stroke-width':1.2}); ns(g,'circle',{cx:16,cy:-18,r:2,fill:c}); ns(g,'circle',{cx:16,cy:15,r:2,fill:c}); }},
+  'h-ocak':{ name:'Ocak', W:60, H:60, color:'#7ee787', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-30,y:-30,width:60,height:60,fill:'rgba(126,231,135,0.06)',stroke:c,'stroke-width':1.5}); [[-14,-14],[14,-14],[-14,14],[14,14]].forEach(([cx,cy])=>{ ns(g,'circle',{cx,cy,r:9,fill:'none',stroke:c,'stroke-width':1.5}); ns(g,'circle',{cx,cy,r:3,fill:'none',stroke:c,'stroke-width':1}); }); }},
+  'h-evye':{ name:'Evye', W:70, H:44, color:'#7ee787', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-35,y:-20,width:70,height:40,fill:'rgba(126,231,135,0.06)',stroke:c,'stroke-width':1.5,rx:3}); ns(g,'rect',{x:-33,y:-18,width:28,height:34,fill:'none',stroke:c,'stroke-width':1,rx:2}); ns(g,'rect',{x:-1,y:-18,width:30,height:34,fill:'none',stroke:c,'stroke-width':1,rx:2}); }},
+  'h-tezgah':{ name:'Tezgah', W:100, H:30, color:'#7ee787', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-50,y:-14,width:100,height:28,fill:'#21262d',stroke:c,'stroke-width':1.5}); }},
+  'h-tek-yatak':{ name:'Tek Yatak', W:80, H:50, color:'#d2a8ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-40,y:-25,width:80,height:50,fill:'rgba(210,168,255,0.06)',stroke:c,'stroke-width':1.5,rx:3}); ns(g,'rect',{x:-38,y:-23,width:76,height:20,fill:'rgba(210,168,255,0.1)',stroke:c,'stroke-width':1,rx:8}); }},
+  'h-cift-yatak':{ name:'Çift Yatak', W:100, H:70, color:'#d2a8ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-50,y:-35,width:100,height:70,fill:'rgba(210,168,255,0.06)',stroke:c,'stroke-width':1.5,rx:3}); ns(g,'rect',{x:-48,y:-33,width:40,height:22,fill:'rgba(210,168,255,0.1)',stroke:c,'stroke-width':1,rx:8}); ns(g,'rect',{x:-2,y:-33,width:48,height:22,fill:'rgba(210,168,255,0.1)',stroke:c,'stroke-width':1,rx:8}); }},
+  'h-kanepe':{ name:'Kanepe', W:100, H:50, color:'#f0883e', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-40,y:-16,width:80,height:32,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:6}); ns(g,'rect',{x:-52,y:-12,width:16,height:24,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:4}); ns(g,'rect',{x:36,y:-12,width:16,height:24,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:4}); }},
+  'h-sandalye':{ name:'Sandalye', W:44, H:44, color:'#c9d1d9', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-20,y:-4,width:40,height:26,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5,rx:3}); ns(g,'rect',{x:-20,y:-22,width:40,height:20,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5,rx:3}); }},
+  'h-ymasa':{ name:'Yuvarlak Masa', W:60, H:60, color:'#c9d1d9', ports:[],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:0,r:26,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5}); }},
+  'h-dmasa':{ name:'Dikd. Masa', W:100, H:60, color:'#c9d1d9', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-50,y:-28,width:100,height:56,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5,rx:3}); }},
+  'h-dolap':{ name:'Gardırop', W:80, H:50, color:'#c9d1d9', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-40,y:-25,width:80,height:50,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5}); ns(g,'line',{x1:0,y1:-25,x2:0,y2:25,stroke:c,'stroke-width':1}); ns(g,'circle',{cx:-8,cy:0,r:2.5,fill:c}); ns(g,'circle',{cx:8,cy:0,r:2.5,fill:c}); }},
+  'h-tv':{ name:'Televizyon', W:90, H:30, color:'#79c0ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-45,y:-14,width:90,height:28,fill:'rgba(121,192,255,0.1)',stroke:c,'stroke-width':1.5,rx:3}); txt(g,0,5,'TV',c,11,'bold'); }},
+  'h-camasir':{ name:'Çam. Makinesi', W:56, H:56, color:'#58a6ff', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-28,y:-28,width:56,height:56,fill:'rgba(88,166,255,0.06)',stroke:c,'stroke-width':1.5,rx:3}); ns(g,'circle',{cx:0,cy:4,r:16,fill:'none',stroke:c,'stroke-width':1.5}); ns(g,'circle',{cx:0,cy:4,r:8,fill:'none',stroke:c,'stroke-width':1}); }},
+  'h-araba':{ name:'Araba', W:100, H:50, color:'#8b949e', ports:[],
+    draw(g,c){ ns(g,'rect',{x:-50,y:-16,width:100,height:32,fill:'rgba(139,148,158,0.08)',stroke:c,'stroke-width':1.5,rx:6}); ns(g,'rect',{x:-32,y:-26,width:64,height:16,fill:'rgba(139,148,158,0.08)',stroke:c,'stroke-width':1,rx:4}); ns(g,'circle',{cx:-32,cy:18,r:8,fill:'#21262d',stroke:c,'stroke-width':1.5}); ns(g,'circle',{cx:32,cy:18,r:8,fill:'#21262d',stroke:c,'stroke-width':1.5}); }},
+  'h-agac':{ name:'Ağaç', W:40, H:50, color:'#7ee787', ports:[],
+    draw(g,c){ ns(g,'circle',{cx:0,cy:-10,r:16,fill:'rgba(126,231,135,0.12)',stroke:c,'stroke-width':1.5}); wire(g,0,6,0,22,c); }},
+  'h-havuz':{ name:'Havuz', W:90, H:60, color:'#58a6ff', ports:[],
+    draw(g,c){ ns(g,'ellipse',{cx:0,cy:0,rx:42,ry:26,fill:'rgba(88,166,255,0.15)',stroke:c,'stroke-width':1.5}); ns(g,'ellipse',{cx:0,cy:0,rx:28,ry:16,fill:'none',stroke:c,'stroke-width':0.8,'stroke-dasharray':'4,3'}); }}
 };
 
-var HDEFS={
-  kapi:{name:'Kapi',W:50,H:50,color:'#c9d1d9',ports:[],draw:function(g,c){ns(g,'line',{x1:-25,y1:25,x2:-25,y2:-25,stroke:c,'stroke-width':4,'stroke-linecap':'square'});ns(g,'line',{x1:-25,y1:25,x2:25,y2:25,stroke:c,'stroke-width':1.5});ns(g,'path',{d:'M-25,-25 A50,50 0 0,1 25,25',fill:'none',stroke:c,'stroke-width':1,'stroke-dasharray':'4,3'});}},
-  pencere:{name:'Pencere',W:60,H:20,color:'#c9d1d9',ports:[],draw:function(g,c){ns(g,'rect',{x:-30,y:-8,width:60,height:16,fill:'rgba(88,166,255,0.1)',stroke:c,'stroke-width':3});[-16,-4,8,20].forEach(function(x){ns(g,'line',{x1:x,y1:-8,x2:x,y2:8,stroke:'#58a6ff','stroke-width':1});});}},
-  merdiven:{name:'Merdiven',W:80,H:60,color:'#8b949e',ports:[],draw:function(g,c){ns(g,'rect',{x:-40,y:-30,width:80,height:60,fill:'none',stroke:c,'stroke-width':1.5});for(var i=-20;i<=20;i+=10){ns(g,'line',{x1:-40,y1:i,x2:40,y2:i,stroke:c,'stroke-width':1});}tx(g,0,-22,'up',c,10);}},
-  sutun:{name:'Sutun',W:30,H:30,color:'#8b949e',ports:[],draw:function(g,c){ns(g,'rect',{x:-15,y:-15,width:30,height:30,fill:'#21262d',stroke:c,'stroke-width':2});}},
-  'oda-salon':{name:'Salon',W:90,H:50,color:'#79c0ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-45,y:-25,width:90,height:50,fill:'rgba(121,192,255,0.08)',stroke:c,'stroke-width':1.5,rx:3});tx(g,0,5,'SALON',c,11,'bold');}},
-  'oda-yatak':{name:'Yatak Odasi',W:90,H:50,color:'#d2a8ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-45,y:-25,width:90,height:50,fill:'rgba(210,168,255,0.08)',stroke:c,'stroke-width':1.5,rx:3});tx(g,0,5,'YATAK',c,11,'bold');}},
-  'oda-mutfak':{name:'Mutfak',W:90,H:50,color:'#7ee787',ports:[],draw:function(g,c){ns(g,'rect',{x:-45,y:-25,width:90,height:50,fill:'rgba(126,231,135,0.08)',stroke:c,'stroke-width':1.5,rx:3});tx(g,0,5,'MUTFAK',c,11,'bold');}},
-  'oda-banyo':{name:'Banyo',W:70,H:50,color:'#58a6ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-35,y:-25,width:70,height:50,fill:'rgba(88,166,255,0.08)',stroke:c,'stroke-width':1.5,rx:3});tx(g,0,5,'BANYO',c,11,'bold');}},
-  'oda-wc':{name:'WC',W:50,H:40,color:'#f0883e',ports:[],draw:function(g,c){ns(g,'rect',{x:-25,y:-20,width:50,height:40,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:3});tx(g,0,5,'WC',c,11,'bold');}},
-  kuvvet:{name:'Kuvet',W:90,H:44,color:'#58a6ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-45,y:-20,width:90,height:40,fill:'rgba(88,166,255,0.08)',stroke:c,'stroke-width':1.5,rx:16});ns(g,'circle',{cx:-32,cy:-8,r:6,fill:'none',stroke:c,'stroke-width':1.5});}},
-  dus:{name:'Dus',W:60,H:60,color:'#58a6ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-30,y:-30,width:60,height:60,fill:'rgba(88,166,255,0.05)',stroke:c,'stroke-width':1.5,rx:3});ns(g,'circle',{cx:0,cy:0,r:14,fill:'none',stroke:c,'stroke-width':1.5});ns(g,'circle',{cx:0,cy:0,r:4,fill:'none',stroke:c,'stroke-width':1});}},
-  tuvalet:{name:'Tuvalet',W:44,H:56,color:'#58a6ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-22,y:-28,width:44,height:16,fill:'rgba(88,166,255,0.08)',stroke:c,'stroke-width':1.5,rx:2});ns(g,'ellipse',{cx:0,cy:8,rx:18,ry:20,fill:'rgba(88,166,255,0.06)',stroke:c,'stroke-width':1.5});}},
-  lavabo:{name:'Lavabo',W:50,H:44,color:'#58a6ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-25,y:-20,width:50,height:40,fill:'rgba(88,166,255,0.06)',stroke:c,'stroke-width':1.5,rx:8});ns(g,'circle',{cx:0,cy:2,r:10,fill:'none',stroke:c,'stroke-width':1.2});}},
-  buzdolabi:{name:'Buzdolabi',W:44,H:70,color:'#7ee787',ports:[],draw:function(g,c){ns(g,'rect',{x:-22,y:-35,width:44,height:70,fill:'rgba(126,231,135,0.06)',stroke:c,'stroke-width':1.5,rx:3});ns(g,'line',{x1:-22,y1:-5,x2:22,y2:-5,stroke:c,'stroke-width':1.2});}},
-  ocak:{name:'Ocak',W:60,H:60,color:'#7ee787',ports:[],draw:function(g,c){ns(g,'rect',{x:-30,y:-30,width:60,height:60,fill:'rgba(126,231,135,0.06)',stroke:c,'stroke-width':1.5});[[-14,-14],[14,-14],[-14,14],[14,14]].forEach(function(p){ns(g,'circle',{cx:p[0],cy:p[1],r:9,fill:'none',stroke:c,'stroke-width':1.5});ns(g,'circle',{cx:p[0],cy:p[1],r:3,fill:'none',stroke:c,'stroke-width':1});});}},
-  evye:{name:'Evye',W:70,H:44,color:'#7ee787',ports:[],draw:function(g,c){ns(g,'rect',{x:-35,y:-20,width:70,height:40,fill:'rgba(126,231,135,0.06)',stroke:c,'stroke-width':1.5,rx:3});ns(g,'rect',{x:-33,y:-18,width:28,height:34,fill:'none',stroke:c,'stroke-width':1,rx:2});ns(g,'rect',{x:-1,y:-18,width:30,height:34,fill:'none',stroke:c,'stroke-width':1,rx:2});}},
-  tezgah:{name:'Tezgah',W:100,H:30,color:'#7ee787',ports:[],draw:function(g,c){ns(g,'rect',{x:-50,y:-14,width:100,height:28,fill:'#21262d',stroke:c,'stroke-width':1.5});}},
-  'tek-yatak':{name:'Tek Yatak',W:80,H:50,color:'#d2a8ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-40,y:-25,width:80,height:50,fill:'rgba(210,168,255,0.06)',stroke:c,'stroke-width':1.5,rx:3});ns(g,'rect',{x:-38,y:-23,width:76,height:20,fill:'rgba(210,168,255,0.1)',stroke:c,'stroke-width':1,rx:8});}},
-  'cift-yatak':{name:'Cift Yatak',W:100,H:70,color:'#d2a8ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-50,y:-35,width:100,height:70,fill:'rgba(210,168,255,0.06)',stroke:c,'stroke-width':1.5,rx:3});ns(g,'rect',{x:-48,y:-33,width:40,height:22,fill:'rgba(210,168,255,0.1)',stroke:c,'stroke-width':1,rx:8});ns(g,'rect',{x:-2,y:-33,width:48,height:22,fill:'rgba(210,168,255,0.1)',stroke:c,'stroke-width':1,rx:8});}},
-  kanepe:{name:'Kanepe',W:100,H:50,color:'#f0883e',ports:[],draw:function(g,c){ns(g,'rect',{x:-40,y:-16,width:80,height:32,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:6});ns(g,'rect',{x:-52,y:-12,width:16,height:24,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:4});ns(g,'rect',{x:36,y:-12,width:16,height:24,fill:'rgba(240,136,62,0.08)',stroke:c,'stroke-width':1.5,rx:4});}},
-  sandalye:{name:'Sandalye',W:44,H:44,color:'#c9d1d9',ports:[],draw:function(g,c){ns(g,'rect',{x:-20,y:-4,width:40,height:26,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5,rx:3});ns(g,'rect',{x:-20,y:-22,width:40,height:20,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5,rx:3});}},
-  ymasa:{name:'Yuvarlak Masa',W:60,H:60,color:'#c9d1d9',ports:[],draw:function(g,c){ns(g,'circle',{cx:0,cy:0,r:26,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5});}},
-  dmasa:{name:'Dikd. Masa',W:100,H:60,color:'#c9d1d9',ports:[],draw:function(g,c){ns(g,'rect',{x:-50,y:-28,width:100,height:56,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5,rx:3});}},
-  dolap:{name:'Gardrop',W:80,H:50,color:'#c9d1d9',ports:[],draw:function(g,c){ns(g,'rect',{x:-40,y:-25,width:80,height:50,fill:'rgba(200,200,200,0.06)',stroke:c,'stroke-width':1.5});ns(g,'line',{x1:0,y1:-25,x2:0,y2:25,stroke:c,'stroke-width':1});ns(g,'circle',{cx:-8,cy:0,r:2.5,fill:c});ns(g,'circle',{cx:8,cy:0,r:2.5,fill:c});}},
-  tv:{name:'TV',W:90,H:30,color:'#79c0ff',ports:[],draw:function(g,c){ns(g,'rect',{x:-45,y:-14,width:90,height:28,fill:'rgba(121,192,255,0.1)',stroke:c,'stroke-width':1.5,rx:3});tx(g,0,5,'TV',c,11,'bold');}},
-  araba:{name:'Araba',W:100,H:50,color:'#8b949e',ports:[],draw:function(g,c){ns(g,'rect',{x:-50,y:-16,width:100,height:32,fill:'rgba(139,148,158,0.08)',stroke:c,'stroke-width':1.5,rx:6});ns(g,'rect',{x:-32,y:-26,width:64,height:16,fill:'rgba(139,148,158,0.08)',stroke:c,'stroke-width':1,rx:4});ns(g,'circle',{cx:-32,cy:18,r:8,fill:'#21262d',stroke:c,'stroke-width':1.5});ns(g,'circle',{cx:32,cy:18,r:8,fill:'#21262d',stroke:c,'stroke-width':1.5});}},
-  agac:{name:'Agac',W:40,H:50,color:'#7ee787',ports:[],draw:function(g,c){ns(g,'circle',{cx:0,cy:-10,r:16,fill:'rgba(126,231,135,0.12)',stroke:c,'stroke-width':1.5});wl(g,0,6,0,22,c);}},
-  havuz:{name:'Havuz',W:90,H:60,color:'#58a6ff',ports:[],draw:function(g,c){ns(g,'ellipse',{cx:0,cy:0,rx:42,ry:26,fill:'rgba(88,166,255,0.15)',stroke:c,'stroke-width':1.5});ns(g,'ellipse',{cx:0,cy:0,rx:28,ry:16,fill:'none',stroke:c,'stroke-width':0.8,'stroke-dasharray':'4,3'});}}
-};
-
-function getDefs(){return mode==='electric'?EDEFS:HDEFS;}
-function getC(){return data[mode].comps;}
-function getW(){return data[mode].wires;}
-
-function ns(p,tag,a){var el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(var k in a)el.setAttribute(k,a[k]);p.appendChild(el);return el;}
-function wl(g,x1,y1,x2,y2,c){ns(g,'line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:c,'stroke-width':2,'stroke-linecap':'round'});}
-function tx(g,x,y,text,fill,size,weight){var t=ns(g,'text',{x:x,y:y,'text-anchor':'middle',fill:fill,'font-size':size||12,'font-weight':weight||'normal','font-family':'Segoe UI,sans-serif'});t.textContent=text;return t;}
+// =====================================================
+// SVG HELPERS
+// =====================================================
+function ns(parent,tag,attrs){
+  const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  for(const[k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+  parent.appendChild(el); return el;
+}
+function wire(g,x1,y1,x2,y2,c){ns(g,'line',{x1,y1,x2,y2,stroke:c,'stroke-width':2,'stroke-linecap':'round'});}
+function txt(g,x,y,text,fill,size=12,weight='normal'){
+  const t=ns(g,'text',{x,y,'text-anchor':'middle',fill,'font-size':size,'font-weight':weight,'font-family':'monospace'});
+  t.textContent=text; return t;
+}
 function snap(v){return Math.round(v/GRID)*GRID;}
-function svgPt(e){var r=SVG.getBoundingClientRect();return{x:(e.clientX-r.left-vx)/vscale,y:(e.clientY-r.top-vy)/vscale};}
-function applyView(){wiresG.setAttribute('transform','translate('+vx+','+vy+') scale('+vscale+')');compsG.setAttribute('transform','translate('+vx+','+vy+') scale('+vscale+')');drawGrid();document.getElementById('st-zoom').textContent='Zoom: '+Math.round(vscale*100)+'%';}
-function drawGrid(){var cv=document.getElementById('grid-bg'),w=document.getElementById('canvas-wrap');cv.width=w.clientWidth;cv.height=w.clientHeight;var ctx=cv.getContext('2d');ctx.strokeStyle='#1c2128';ctx.lineWidth=0.5;var sx=(vx%(GRID*vscale)+GRID*vscale)%(GRID*vscale),sy=(vy%(GRID*vscale)+GRID*vscale)%(GRID*vscale);for(var x=sx;x<cv.width;x+=GRID*vscale){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}for(var y=sy;y<cv.height;y+=GRID*vscale){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}}
+function svgPt(e){
+  const r=SVG.getBoundingClientRect();
+  return{x:(e.clientX-r.left-vx)/vscale, y:(e.clientY-r.top-vy)/vscale};
+}
+function applyView(){
+  wiresG.setAttribute('transform',`translate(${vx},${vy}) scale(${vscale})`);
+  compsG.setAttribute('transform',`translate(${vx},${vy}) scale(${vscale})`);
+  drawGrid();
+  document.getElementById('st-zoom').textContent=`Zoom: ${Math.round(vscale*100)}%`;
+}
+function drawGrid(){
+  const cv=document.getElementById('grid-bg');
+  const wrap=document.getElementById('canvas-wrap');
+  cv.width=wrap.clientWidth; cv.height=wrap.clientHeight;
+  const ctx=cv.getContext('2d');
+  ctx.strokeStyle='#1c2128'; ctx.lineWidth=0.5;
+  const sx=(vx%(GRID*vscale)+GRID*vscale)%(GRID*vscale);
+  const sy=(vy%(GRID*vscale)+GRID*vscale)%(GRID*vscale);
+  for(let x=sx;x<cv.width;x+=GRID*vscale){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}
+  for(let y=sy;y<cv.height;y+=GRID*vscale){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}
+}
 
+// =====================================================
+// RENDER
+// =====================================================
 function renderComp(c){
-  var g=document.getElementById('c'+c.id);if(g)g.remove();
+  let g=document.getElementById(`c${c.id}`);
+  if(g) g.remove();
   g=document.createElementNS('http://www.w3.org/2000/svg','g');
-  g.setAttribute('id','c'+c.id);
-  g.setAttribute('transform','translate('+c.x+','+c.y+') rotate('+(c.rot||0)+') scale('+(c.flip?-1:1)+',1)');
+  g.setAttribute('id',`c${c.id}`);
+  g.setAttribute('transform',`translate(${c.x},${c.y}) rotate(${c.rot||0}) scale(${c.flip?-1:1},1)`);
   g.style.cursor='move';
-  var def=getDefs()[c.type];if(!def)return;
-  def.draw(g,c.color||def.color);
-  if(tool==='wire'&&mode==='electric'&&def.ports){
-    def.ports.forEach(function(p,i){
-      var pc=ns(g,'circle',{cx:p.x,cy:p.y,r:6,fill:'rgba(88,166,255,0.15)',stroke:'#58a6ff','stroke-width':1.5,cursor:'crosshair'});
-      pc.addEventListener('mousedown',function(ev){ev.stopPropagation();startPort(c,i,ev);});
+  const def=DEFS[c.type];
+  if(!def) return;
+  def.draw(g, c.color||def.color);
+  // Port indicators (wire mode)
+  if(tool==='wire'){
+    def.ports.forEach((p,i)=>{
+      const pc=ns(g,'circle',{cx:p.x,cy:p.y,r:6,fill:'rgba(88,166,255,0.15)',stroke:'#58a6ff','stroke-width':1.5,opacity:.8,cursor:'crosshair'});
+      pc.addEventListener('mousedown',ev=>{ev.stopPropagation();startWirePort(c,i,ev);});
     });
   }
-  if(c.label){var t=ns(g,'text',{x:0,y:-(def.H/2+10),'text-anchor':'middle',fill:'#8b949e','font-size':10,'font-family':'Segoe UI,sans-serif'});t.textContent=c.label;}
-  if(c.value){var t2=ns(g,'text',{x:0,y:def.H/2+16,'text-anchor':'middle',fill:'#484f58','font-size':9,'font-family':'monospace'});t2.textContent=c.value;}
-  if(c.id===selId){ns(g,'rect',{x:-(def.W/2+6),y:-(def.H/2+6),width:def.W+12,height:def.H+12,fill:'none',stroke:'#f0883e','stroke-width':1.5,'stroke-dasharray':'4,3',rx:5});}
-  ns(g,'rect',{x:-def.W/2,y:-def.H/2,width:def.W,height:def.H,fill:'transparent'});
-  g.addEventListener('mousedown',function(ev){onCDown(ev,c.id);});
-  g.addEventListener('mouseover',function(){showTip(def.name);});
+  // Labels
+  if(c.label){const t=ns(g,'text',{x:0,y:-(def.H/2+10),'text-anchor':'middle',fill:'#8b949e','font-size':10,'font-family':'Segoe UI,sans-serif'});t.textContent=c.label;}
+  if(c.value){const t=ns(g,'text',{x:0,y:def.H/2+16,'text-anchor':'middle',fill:'#484f58','font-size':9,'font-family':'monospace'});t.textContent=c.value;}
+  // Selection ring
+  if(c.id===selId){
+    ns(g,'rect',{x:-(def.W/2+6),y:-(def.H/2+6),width:def.W+12,height:def.H+12,fill:'none',stroke:'#f0883e','stroke-width':1.5,'stroke-dasharray':'4,3',rx:5});
+  }
+  // Hit area
+  const hit=ns(g,'rect',{x:-def.W/2,y:-def.H/2,width:def.W,height:def.H,fill:'transparent'});
+  g.addEventListener('mousedown',ev=>onCompDown(ev,c.id));
+  g.addEventListener('mouseover',()=>showTip(def.name));
   g.addEventListener('mouseout',hideTip);
   compsG.appendChild(g);
 }
 
 function renderAll(){
+  // Wires / Walls
   wiresG.innerHTML='';
-  getW().forEach(function(w){
-    var isH=mode==='house';
-    var line=ns(wiresG,'line',{x1:w.x1,y1:w.y1,x2:w.x2,y2:w.y2,stroke:w.id===selId?'#f0883e':(isH?w.color||'#c9d1d9':'#58a6ff'),'stroke-width':w.id===selId?(isH?w.thick+2||12:3):(isH?w.thick||10:2),'stroke-linecap':isH?'square':'round'});
+  wires.forEach(w=>{
+    const isWall = w.wall;
+    const line=ns(wiresG,'line',{
+      x1:w.x1,y1:w.y1,x2:w.x2,y2:w.y2,
+      stroke:w.id===selId?'#f0883e':(isWall?w.color||'#c9d1d9':'#58a6ff'),
+      'stroke-width':w.id===selId?(isWall?12:3):(isWall?w.thick||10:2),
+      'stroke-linecap':isWall?'square':'round'
+    });
     line.style.cursor='pointer';
-    line.addEventListener('mousedown',function(ev){onWDown(ev,w.id);});
+    line.addEventListener('mousedown',ev=>{
+      if(tool==='delete'||tool==='wall'&&false){ev.stopPropagation();saveHistory();wires=wires.filter(x=>x.id!==w.id);renderAll();}
+      else if(tool==='delete'){ev.stopPropagation();saveHistory();wires=wires.filter(x=>x.id!==w.id);renderAll();}
+      else if(tool==='select'){selId=w.id;renderAll();updateWallProps();}
+    });
   });
+  // Components
   compsG.innerHTML='';
-  getC().forEach(renderComp);
-  document.getElementById('st-cnt').textContent='Bilesen: '+getC().length+(mode==='house'?' Duvar: '+getW().length:'');
+  comps.forEach(renderComp);
+  document.getElementById('st-cnt').textContent=`Bileşen: ${comps.length}  Kablo: ${wires.length}`;
 }
 
-function onWDown(ev,id){
-  if(tool==='delete'){ev.stopPropagation();saveH();data[mode].wires=getW().filter(function(x){return x.id!==id;});renderAll();}
-  else if(tool==='select'){selId=id;renderAll();updateProps();}
-}
-
+// =====================================================
+// TOOLS
+// =====================================================
 function setTool(t){
   tool=t;
-  ['select','wire','delete','hselect','wall','hdelete'].forEach(function(x){var b=document.getElementById('tb-'+x);if(b)b.classList.remove('active');});
-  if(mode==='electric'){var b=document.getElementById('tb-'+t);if(b)b.classList.add('active');}
-  else{var map={select:'hselect',wall:'wall',delete:'hdelete'};var b=document.getElementById('tb-'+(map[t]||t));if(b)b.classList.add('active');}
+  document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById(`tb-${t}`);
+  if(btn) btn.classList.add('active');
   SVG.style.cursor=(t==='wire'||t==='wall')?'crosshair':t==='delete'?'not-allowed':'default';
-  document.getElementById('st-tool').textContent={select:'Sec',wire:'Kablo',delete:'Sil',wall:'Duvar'}[t]||t;
+  document.getElementById('st-tool').textContent={select:'Seç',wire:'Kablo',delete:'Sil',wall:'Duvar'}[t]||t;
   if(t!=='wire'&&t!=='wall'&&wireFrom){wireFrom=null;if(tempLine){tempLine.remove();tempLine=null;}}
   renderAll();
 }
 
-function onCDown(e,id){
-  if(e.button!==0)return;e.stopPropagation();
-  if(tool==='delete'){saveH();data[mode].comps=getC().filter(function(c){return c.id!==id;});selId=null;renderAll();updateProps();return;}
-  if(tool==='wire'||tool==='wall')return;
-  selId=id;isDrag=true;
-  var c=getC().find(function(x){return x.id===id;}),pt=svgPt(e);
+// =====================================================
+// COMPONENT MOUSE
+// =====================================================
+function onCompDown(e,id){
+  if(e.button!==0) return;
+  e.stopPropagation();
+  if(tool==='delete'){saveHistory();comps=comps.filter(c=>c.id!==id);wires=wires.filter(w=>w.fc!==id&&w.tc!==id);selId=null;renderAll();updateProps();return;}
+  if(tool==='wire'||tool==='wall') return;
+  selId=id;
+  isDrag=true;
+  const c=comps.find(x=>x.id===id);
+  const pt=svgPt(e);
   dragOff={x:pt.x-c.x,y:pt.y-c.y};
-  renderAll();updateProps();
+  renderAll(); updateProps();
 }
 
-var wireStartTime=0;
-SVG.addEventListener('mousedown',function(e){
-  if(e.button===1||(e.button===0&&e.altKey)){isPan=true;panStart={x:e.clientX-vx,y:e.clientY-vy};SVG.style.cursor='grabbing';return;}
-  if(e.button!==0)return;
-  var at=tool;
-  if((at==='wire'||at==='wall')&&!wireFrom){
-    var pt=svgPt(e);
+// =====================================================
+// SVG EVENTS
+// =====================================================
+SVG.addEventListener('mousedown',e=>{
+  // Alt+drag or middle button = pan
+  if(e.button===1||(e.button===0&&e.altKey)){
+    isPan=true; panStart={x:e.clientX-vx,y:e.clientY-vy}; SVG.style.cursor='grabbing'; return;
+  }
+  if((tool==='wire'||tool==='wall') && !wireFrom){
+    const pt=svgPt(e);
     wireFrom={x:snap(pt.x),y:snap(pt.y)};
-    wireStartTime=Date.now();
-    tempLine=ns(wiresG,'line',{x1:wireFrom.x,y1:wireFrom.y,x2:wireFrom.x,y2:wireFrom.y,stroke:at==='wall'?'#c9d1d9':'#58a6ff','stroke-width':at==='wall'?10:2,'stroke-dasharray':'6,4',opacity:.7,'stroke-linecap':at==='wall'?'square':'round'});
-    tempLine.style.pointerEvents='none';
+    const isWall=tool==='wall';
+    tempLine=ns(wiresG,'line',{x1:wireFrom.x,y1:wireFrom.y,x2:wireFrom.x,y2:wireFrom.y,
+      stroke:isWall?'#c9d1d9':'#58a6ff','stroke-width':isWall?10:2,
+      'stroke-dasharray':'6,4',opacity:.7,'stroke-linecap':isWall?'square':'round'});
     return;
   }
-  if(at==='select'){selId=null;renderAll();updateProps();}
-});
-SVG.addEventListener('click',function(e){
-  if(e.button!==0)return;
-  var at=tool;
-  if((at==='wire'||at==='wall')&&wireFrom&&(Date.now()-wireStartTime>250)){
-    var pt=svgPt(e),end={x:snap(pt.x),y:snap(pt.y)};
-    if(Math.hypot(end.x-wireFrom.x,end.y-wireFrom.y)>5){
-      saveH();
-      if(at==='wall')getW().push({id:'w'+uid++,x1:wireFrom.x,y1:wireFrom.y,x2:end.x,y2:end.y,thick:10,color:'#c9d1d9'});
-      else getW().push({id:'w'+uid++,x1:wireFrom.x,y1:wireFrom.y,x2:end.x,y2:end.y});
-    }
-    if(tempLine){tempLine.remove();tempLine=null;}wireFrom=null;renderAll();
-  }
+  if(tool==='select'){selId=null;renderAll();updateProps();}
 });
 
-SVG.addEventListener('mousemove',function(e){
-  var pt=svgPt(e);
-  document.getElementById('st-xy').textContent='X: '+Math.round(pt.x)+'  Y: '+Math.round(pt.y);
+SVG.addEventListener('mousemove',e=>{
+  const pt=svgPt(e);
+  document.getElementById('st-xy').textContent=`X: ${Math.round(pt.x)}  Y: ${Math.round(pt.y)}`;
   if(isPan){vx=e.clientX-panStart.x;vy=e.clientY-panStart.y;applyView();return;}
   if(isDrag&&selId){
-    var c=getC().find(function(x){return x.id===selId;});
-    if(c){c.x=snap(pt.x-dragOff.x);c.y=snap(pt.y-dragOff.y);}
-    var g=document.getElementById('c'+selId);
-    if(g&&c)g.setAttribute('transform','translate('+c.x+','+c.y+') rotate('+(c.rot||0)+') scale('+(c.flip?-1:1)+',1)');
+    const c=comps.find(x=>x.id===selId);
+    if(c){c.x=snap(pt.x-dragOff.x);c.y=snap(pt.y-dragOff.y);compsG.getElementById||renderAll();}
+    const g=document.getElementById(`c${selId}`);
+    if(g) g.setAttribute('transform',`translate(${c.x},${c.y}) rotate(${c.rot||0}) scale(${c.flip?-1:1},1)`);
     return;
   }
-  if((tool==='wire'||tool==='wall')&&wireFrom&&tempLine){tempLine.setAttribute('x2',snap(pt.x));tempLine.setAttribute('y2',snap(pt.y));}
-  var tip=document.getElementById('tip');tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-20)+'px';
+  if((tool==='wire'||tool==='wall')&&wireFrom&&tempLine){
+    tempLine.setAttribute('x2',snap(pt.x));tempLine.setAttribute('y2',snap(pt.y));
+  }
+  const tip=document.getElementById('tip');
+  tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY-20)+'px';
 });
 
-SVG.addEventListener('mouseup',function(e){
-  if(isPan){isPan=false;SVG.style.cursor=(tool==='wall'||tool==='wire')?'crosshair':tool==='delete'?'not-allowed':'default';return;}
-  if(isDrag){saveH();isDrag=false;renderAll();}
+SVG.addEventListener('mouseup',e=>{
+  if(isPan){isPan=false;SVG.style.cursor=tool==='wire'?'crosshair':tool==='delete'?'not-allowed':'default';return;}
+  if(isDrag){saveHistory();isDrag=false;renderAll();return;}
+  if((tool==='wire'||tool==='wall')&&wireFrom&&tempLine){
+    const pt=svgPt(e);
+    const end={x:snap(pt.x),y:snap(pt.y)};
+    if(Math.hypot(end.x-wireFrom.x,end.y-wireFrom.y)>5){
+      saveHistory();
+      wires.push({id:`w${uid++}`,x1:wireFrom.x,y1:wireFrom.y,x2:end.x,y2:end.y});
+    }
+    tempLine.remove();tempLine=null;wireFrom=null;renderAll();
+  }
 });
 
-SVG.addEventListener('wheel',function(e){
+SVG.addEventListener('wheel',e=>{
   e.preventDefault();
-  var f=e.deltaY>0?0.88:1.14,r=SVG.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top;
-  vx=cx-(cx-vx)*f;vy=cy-(cy-vy)*f;vscale=Math.max(0.05,Math.min(8,vscale*f));applyView();
+  const f=e.deltaY>0?0.88:1.14;
+  const r=SVG.getBoundingClientRect();
+  const cx=e.clientX-r.left,cy=e.clientY-r.top;
+  vx=cx-(cx-vx)*f; vy=cy-(cy-vy)*f;
+  vscale=Math.max(0.05,Math.min(8,vscale*f));
+  applyView();
 },{passive:false});
 
-document.querySelectorAll('.comp-item').forEach(function(el){el.addEventListener('dragstart',function(e){dragType=el.dataset.type;e.dataTransfer.effectAllowed='copy';});});
-document.getElementById('canvas-wrap').addEventListener('dragover',function(e){e.preventDefault();});
-document.getElementById('canvas-wrap').addEventListener('drop',function(e){
-  e.preventDefault();if(!dragType)return;
-  var r=SVG.getBoundingClientRect(),x=snap((e.clientX-r.left-vx)/vscale),y=snap((e.clientY-r.top-vy)/vscale);
-  var def=getDefs()[dragType];if(!def)return;
-  saveH();
-  var c={id:'c'+uid++,type:dragType,x:x,y:y,rot:0,flip:false,color:def.color,label:'',value:''};
-  getC().push(c);selId=c.id;renderAll();updateProps();dragType=null;
-});
-
-function startPort(c,i,e){
-  var def=getDefs()[c.type],p=def.ports[i],rad=(c.rot||0)*Math.PI/180;
-  var px=c.x+p.x*Math.cos(rad)-p.y*Math.sin(rad),py=c.y+p.x*Math.sin(rad)+p.y*Math.cos(rad);
+// Wire from port
+function startWirePort(c,portIdx,e){
+  const def=DEFS[c.type];
+  const p=def.ports[portIdx];
+  const rad=(c.rot||0)*Math.PI/180;
+  const px=c.x+p.x*Math.cos(rad)-p.y*Math.sin(rad);
+  const py=c.y+p.x*Math.sin(rad)+p.y*Math.cos(rad);
   wireFrom={x:px,y:py};
   tempLine=ns(wiresG,'line',{x1:px,y1:py,x2:px,y2:py,stroke:'#58a6ff','stroke-width':2,'stroke-dasharray':'6,4',opacity:.7});
 }
 
-function updateProps(){
-  var c=getC().find(function(x){return x.id===selId;});
-  var w=getW().find(function(x){return x.id===selId;});
-  document.getElementById('no-sel').style.display=(c||w)?'none':'block';
-  document.getElementById('prop-form').style.display=c?'block':'none';
-  document.getElementById('wall-form').style.display=(w&&mode==='house')?'block':'none';
-  if(c){document.getElementById('p-label').value=c.label||'';document.getElementById('p-value').value=c.value||'';document.getElementById('p-color').value=c.color||'#58a6ff';}
-  if(w&&mode==='house'){document.getElementById('p-wt').value=w.thick||10;document.getElementById('p-wt-v').textContent=(w.thick||10)+'px';document.getElementById('p-wc').value=w.color||'#c9d1d9';}
-}
-function applyProp(k,v){var c=getC().find(function(x){return x.id===selId;});if(c){c[k]=v;renderAll();}}
-function applyWall(k,v){var w=getW().find(function(x){return x.id===selId;});if(w){w[k]=v;renderAll();}}
-function rotateComp(){var c=getC().find(function(x){return x.id===selId;});if(c){saveH();c.rot=((c.rot||0)+90)%360;renderAll();}}
-function flipComp(){var c=getC().find(function(x){return x.id===selId;});if(c){saveH();c.flip=!c.flip;renderAll();}}
-function deleteSelected(){if(!selId)return;saveH();data[mode].comps=getC().filter(function(c){return c.id!==selId;});data[mode].wires=getW().filter(function(w){return w.id!==selId;});selId=null;renderAll();updateProps();}
+// =====================================================
+// DRAG FROM PALETTE
+// =====================================================
+document.querySelectorAll('.comp-item').forEach(el=>{
+  el.addEventListener('dragstart',e=>{dragType=el.dataset.type;e.dataTransfer.effectAllowed='copy';});
+});
+document.getElementById('canvas-wrap').addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';});
+document.getElementById('canvas-wrap').addEventListener('drop',e=>{
+  e.preventDefault();
+  if(!dragType) return;
+  const r=SVG.getBoundingClientRect();
+  const x=snap((e.clientX-r.left-vx)/vscale);
+  const y=snap((e.clientY-r.top-vy)/vscale);
+  const def=DEFS[dragType];
+  if(!def) return;
+  saveHistory();
+  const c={id:`c${uid++}`,type:dragType,x,y,rot:0,flip:false,color:def.color,label:'',value:''};
+  comps.push(c); selId=c.id; renderAll(); updateProps();
+  dragType=null;
+});
 
-document.addEventListener('keydown',function(e){
-  if(e.target.tagName==='INPUT')return;
-  if(e.key==='s'||e.key==='S')setTool('select');
-  if(e.key==='w'||e.key==='W')setTool(mode==='house'?'wall':'wire');
-  if(e.key==='d'||e.key==='D')setTool('delete');
-  if(e.key==='r'||e.key==='R')rotateComp();
-  if(e.key==='Delete'||e.key==='Backspace')deleteSelected();
-  if(e.key==='Escape'){if(wireFrom){wireFrom=null;if(tempLine){tempLine.remove();tempLine=null;}}selId=null;renderAll();updateProps();}
+// =====================================================
+// PROPERTIES
+// =====================================================
+function updateProps(){
+  const c=comps.find(x=>x.id===selId);
+  if(c){
+    document.getElementById('no-sel').style.display='none';
+    document.getElementById('prop-form').style.display='block';
+    document.getElementById('p-label').value=c.label||'';
+    document.getElementById('p-value').value=c.value||'';
+    document.getElementById('p-color').value=c.color||'#58a6ff';
+  } else {
+    document.getElementById('no-sel').style.display='block';
+    document.getElementById('prop-form').style.display='none';
+  }
+}
+function updateWallProps(){
+  // seçili duvarın renk/kalınlık değiştirebilmesi için ileride genişletilebilir
+  updateProps();
+}
+function applyProp(key,val){
+  const c=comps.find(x=>x.id===selId); if(c){c[key]=val;renderAll();}
+}
+function rotateComp(){
+  const c=comps.find(x=>x.id===selId); if(c){saveHistory();c.rot=((c.rot||0)+90)%360;renderAll();}
+}
+function flipComp(){
+  const c=comps.find(x=>x.id===selId); if(c){saveHistory();c.flip=!c.flip;renderAll();}
+}
+function deleteSelected(){
+  if(!selId) return;
+  saveHistory();
+  comps=comps.filter(c=>c.id!==selId);
+  wires=wires.filter(w=>w.fc!==selId&&w.tc!==selId);
+  selId=null; renderAll(); updateProps();
+}
+
+// =====================================================
+// KEYBOARD
+// =====================================================
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.key==='s'||e.key==='S') setTool('select');
+  if(e.key==='w'||e.key==='W') setTool(appMode==='h'?'wall':'wire');
+  if(e.key==='d'||e.key==='D') setTool('delete');
+  if(e.key==='r'||e.key==='R') rotateComp();
+  if(e.key==='Delete'||e.key==='Backspace') deleteSelected();
+  if(e.key==='Escape'){
+    if(wireFrom){wireFrom=null;if(tempLine){tempLine.remove();tempLine=null;}}
+    selId=null; renderAll(); updateProps();
+  }
   if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
 });
 
-function saveH(){history.push(JSON.stringify({e:data.electric,h:data.house}));if(history.length>50)history.shift();}
-function undo(){if(!history.length)return;var s=JSON.parse(history.pop());data.electric=s.e;data.house=s.h;selId=null;renderAll();updateProps();}
-function zoomBy(f){var w=document.getElementById('canvas-wrap'),cx=w.clientWidth/2,cy=w.clientHeight/2;vx=cx-(cx-vx)*f;vy=cy-(cy-vy)*f;vscale=Math.max(0.05,Math.min(8,vscale*f));applyView();}
+// =====================================================
+// HISTORY (Undo)
+// =====================================================
+function saveHistory(){
+  history.push(JSON.stringify({e:{comps:modeData.e.comps,wires:modeData.e.wires},h:{comps:modeData.h.comps,wires:modeData.h.wires}}));
+  if(history.length>50) history.shift();
+}
+function undo(){
+  if(!history.length) return;
+  const s=JSON.parse(history.pop());
+  modeData.e.comps=s.e.comps; modeData.e.wires=s.e.wires;
+  modeData.h.comps=s.h.comps; modeData.h.wires=s.h.wires;
+  comps=modeData[appMode].comps; wires=modeData[appMode].wires;
+  selId=null; renderAll(); updateProps();
+}
+
+// =====================================================
+// ZOOM & VIEW
+// =====================================================
+function zoomBy(f){
+  const wrap=document.getElementById('canvas-wrap');
+  const cx=wrap.clientWidth/2, cy=wrap.clientHeight/2;
+  vx=cx-(cx-vx)*f; vy=cy-(cy-vy)*f;
+  vscale=Math.max(0.05,Math.min(8,vscale*f));
+  applyView();
+}
 function resetView(){vx=0;vy=0;vscale=1;applyView();}
-function clearCanvas(){if(!confirm('Bu moddaki veriler silinecek. Devam?'))return;saveH();data[mode].comps=[];data[mode].wires=[];selId=null;renderAll();updateProps();}
-function saveFile(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({data:data,uid:uid},null,2)],{type:'application/json'}));a.download='proje.json';a.click();}
-function openFile(e){var f=e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.data){Object.assign(data,d.data);uid=d.uid||uid;}selId=null;renderAll();updateProps();}catch(err){alert('Dosya okunamadi!');}};fr.readAsText(f);e.target.value='';}
-function exportSVG(){var s=new XMLSerializer().serializeToString(SVG);var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));a.download='proje.svg';a.click();}
-function showTip(t){var d=document.getElementById('tip');d.textContent=t;d.style.display='block';}
+
+// =====================================================
+// CLEAR
+// =====================================================
+function clearCanvas(){
+  if(!confirm('Bu moddaki tüm veriler silinecek. Devam?')) return;
+  saveHistory(); modeData[appMode].comps=[]; modeData[appMode].wires=[]; comps=modeData[appMode].comps; wires=modeData[appMode].wires; selId=null; renderAll(); updateProps();
+}
+
+// =====================================================
+// SAVE / LOAD
+// =====================================================
+function saveFile(){
+  const data=JSON.stringify({modeData,uid},null,2);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));
+  a.download='proje.json'; a.click();
+}
+function openFile(e){
+  const f=e.target.files[0]; if(!f) return;
+  const fr=new FileReader();
+  fr.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.modeData){ modeData.e=d.modeData.e||{comps:[],wires:[]}; modeData.h=d.modeData.h||{comps:[],wires:[]}; }
+      else{ modeData.e.comps=d.comps||[]; modeData.e.wires=d.wires||[]; }
+      uid=d.uid||uid;
+      comps=modeData[appMode].comps; wires=modeData[appMode].wires;
+      selId=null; renderAll(); updateProps();
+    }catch{alert('Dosya okunamadı!');}
+  };
+  fr.readAsText(f); e.target.value='';
+}
+
+// =====================================================
+// EXPORT SVG
+// =====================================================
+function exportSVG(){
+  const svgEl=document.getElementById('main-svg');
+  const s=new XMLSerializer().serializeToString(svgEl);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));
+  a.download='elektrik-devre.svg'; a.click();
+}
+
+// =====================================================
+// TOOLTIP
+// =====================================================
+function showTip(t){const d=document.getElementById('tip');d.textContent=t;d.style.display='block';}
 function hideTip(){document.getElementById('tip').style.display='none';}
+
+// =====================================================
+// HELP
+// =====================================================
 function showHelp(){document.getElementById('modal-overlay').classList.add('show');}
+
+// =====================================================
+// INIT
+// =====================================================
 window.addEventListener('resize',drawGrid);
-applyView();renderAll();
+applyView();
+renderAll();
 </script>
 </body>
 </html>
