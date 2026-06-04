@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Elektrik & Ev Planı Çizim</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -99,6 +99,12 @@ body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e0e0e0;
 #modal h3 { color: #f0883e; margin-bottom: 10px; font-size: 14px; }
 #modal p { color: #8b949e; font-size: 12px; line-height: 1.6; margin-bottom: 14px; }
 #modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ---- TOUCH / DOKUNMATİK ---- */
+#canvas-wrap, #main-svg { touch-action: none; }      /* tuvalde sayfa kaydırma/zoom kapalı */
+#sidebar, .comp-item { touch-action: pan-y; }          /* yan menü dikey kaydırılabilir, yatay sürükleme JS'e gider */
+.comp-item { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.mode-tab, .tool-btn, .floor-item { touch-action: manipulation; }
 </style>
 </head>
 <body>
@@ -418,7 +424,11 @@ body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e0e0e0;
       <b>Ctrl+Z</b> — Geri al<br>
       <b>Tekerlek</b> — Zoom<br>
       <b>Alt + Sürükle</b> — Pan (Kaydır)<br><br>
-      Bileşen eklemek için soldan sürükleyin veya çift tıklayın.
+      <b style="color:#f0883e">📱 Dokunmatik (tablet):</b><br>
+      • Tek parmak — taşı / çiz / seç<br>
+      • İki parmak — kaydır + sıkıştır-yakınlaştır<br>
+      • Soldan sağa parmakla sürükle — bileşen ekle<br><br>
+      Bileşen eklemek için soldan sürükleyin (veya tablette parmakla tuvale sürükleyin).
     </p>
     <div id="modal-btns">
       <button class="tool-btn" onclick="document.getElementById('modal-overlay').classList.remove('show')">Tamam</button>
@@ -772,7 +782,7 @@ function renderComp(c){
   // Port indicators (wire mode)
   if(tool==='wire'){
     def.ports.forEach((p,i)=>{
-      const pc=ns(g,'circle',{cx:p.x,cy:p.y,r:6,fill:'rgba(88,166,255,0.15)',stroke:'#58a6ff','stroke-width':1.5,opacity:.8,cursor:'crosshair'});
+      const pc=ns(g,'circle',{cx:p.x,cy:p.y,r:9,fill:'rgba(88,166,255,0.15)',stroke:'#58a6ff','stroke-width':1.5,opacity:.8,cursor:'crosshair'});
       pc.addEventListener('mousedown',ev=>{ev.stopPropagation();startWirePort(c,i,ev);});
     });
   }
@@ -938,6 +948,131 @@ document.getElementById('canvas-wrap').addEventListener('drop',e=>{
   comps.push(c); selId=c.id; renderAll(); updateProps();
   dragType=null;
 });
+
+// =====================================================
+// DOKUNMATİK DESTEK (iPad / Android tablet)
+// =====================================================
+// Yardımcılar: touch -> sahte mouse olayı (mevcut mouse mantığını yeniden kullanır)
+function fakeMouse(type,t){
+  return new MouseEvent(type,{bubbles:true,cancelable:true,view:window,clientX:t.clientX,clientY:t.clientY,button:0});
+}
+function tDist(a,b){return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);}
+function tMid(a,b){return {x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)/2};}
+function cancelActiveInteraction(){
+  isDrag=false; isPan=false;
+  if(wireFrom){wireFrom=null; if(tempLine){tempLine.remove(); tempLine=null;}}
+}
+
+// ---- PALETTE'TEN PARMAKLA SÜRÜKLE-BIRAK ----
+let palettePending=null;          // {el,x,y,type}
+let paletteTouchActive=false;
+let ghostEl=null;
+document.querySelectorAll('.comp-item').forEach(el=>{
+  el.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1) return;
+    const t=e.touches[0];
+    palettePending={el,x:t.clientX,y:t.clientY,type:el.dataset.type};
+    paletteTouchActive=false;
+  },{passive:true});
+});
+document.addEventListener('touchmove',e=>{
+  // sürükleme henüz başlamadıysa: yatay hareket baskınsa başlat (dikey = menü kaydırma)
+  if(palettePending && !paletteTouchActive){
+    const t=e.touches[0];
+    const dx=t.clientX-palettePending.x, dy=t.clientY-palettePending.y;
+    if(Math.abs(dx)>10 && Math.abs(dx)>=Math.abs(dy)){
+      paletteTouchActive=true;
+      dragType=palettePending.type;
+      const icon=palettePending.el.querySelector('.ci-icon');
+      ghostEl=icon.cloneNode(true);
+      ghostEl.removeAttribute('class');
+      ghostEl.style.cssText='position:fixed;width:64px;height:40px;pointer-events:none;opacity:.9;z-index:3000;filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));background:#161b22;border:1px solid #f0883e;border-radius:6px;padding:2px;';
+      document.body.appendChild(ghostEl);
+      palettePending.el.style.background='#30363d';
+    }
+  }
+  if(paletteTouchActive){
+    e.preventDefault();
+    const t=e.touches[0];
+    ghostEl.style.left=(t.clientX-32)+'px';
+    ghostEl.style.top=(t.clientY-20)+'px';
+  }
+},{passive:false});
+document.addEventListener('touchend',e=>{
+  if(paletteTouchActive){
+    const t=e.changedTouches[0];
+    if(ghostEl){ghostEl.remove();ghostEl=null;}
+    if(palettePending) palettePending.el.style.background='';
+    const wrapRect=document.getElementById('canvas-wrap').getBoundingClientRect();
+    if(dragType && t.clientX>=wrapRect.left && t.clientX<=wrapRect.right && t.clientY>=wrapRect.top && t.clientY<=wrapRect.bottom){
+      const r=SVG.getBoundingClientRect();
+      const x=snap((t.clientX-r.left-vx)/vscale);
+      const y=snap((t.clientY-r.top-vy)/vscale);
+      const def=DEFS[dragType];
+      if(def){ saveHistory(); const c={id:`c${uid++}`,type:dragType,x,y,rot:0,flip:false,color:def.color,label:'',value:''}; comps.push(c); selId=c.id; renderAll(); updateProps(); }
+    }
+    dragType=null;
+  }
+  paletteTouchActive=false; palettePending=null;
+},{passive:false});
+
+// ---- TUVAL: TEK PARMAK (taşı/çiz/seç) + İKİ PARMAK (pan + pinch zoom) ----
+const wrapEl=document.getElementById('canvas-wrap');
+let tMode='none', tStartDist=0, tStartScale=1, tStartMid={x:0,y:0}, tStartVx=0, tStartVy=0, tMoved=false;
+
+wrapEl.addEventListener('touchstart',e=>{
+  if(paletteTouchActive) return;
+  if(e.touches.length===1){
+    e.preventDefault();
+    tMode='single'; tMoved=false;
+    const t=e.touches[0];
+    const target=document.elementFromPoint(t.clientX,t.clientY)||SVG;
+    target.dispatchEvent(fakeMouse('mousedown',t));
+  } else if(e.touches.length===2){
+    e.preventDefault();
+    cancelActiveInteraction();          // tek parmak işlemini iptal et
+    tMode='nav';
+    tStartDist=tDist(e.touches[0],e.touches[1]);
+    tStartScale=vscale;
+    tStartMid=tMid(e.touches[0],e.touches[1]);
+    tStartVx=vx; tStartVy=vy;
+  }
+},{passive:false});
+
+wrapEl.addEventListener('touchmove',e=>{
+  if(paletteTouchActive) return;
+  if(tMode==='single' && e.touches.length===1){
+    e.preventDefault();
+    tMoved=true;
+    SVG.dispatchEvent(fakeMouse('mousemove',e.touches[0]));
+  } else if(tMode==='nav' && e.touches.length>=2){
+    e.preventDefault();
+    const d=tDist(e.touches[0],e.touches[1]);
+    const m=tMid(e.touches[0],e.touches[1]);
+    const r=SVG.getBoundingClientRect();
+    let newScale=Math.max(0.05,Math.min(8,tStartScale*(d/tStartDist)));
+    // başlangıç orta noktasının altındaki içerik koordinatı sabit kalsın (pan + zoom birlikte)
+    const cX=(tStartMid.x-r.left-tStartVx)/tStartScale;
+    const cY=(tStartMid.y-r.top -tStartVy)/tStartScale;
+    vscale=newScale;
+    vx=(m.x-r.left)-cX*vscale;
+    vy=(m.y-r.top )-cY*vscale;
+    applyView();
+  }
+},{passive:false});
+
+wrapEl.addEventListener('touchend',e=>{
+  if(paletteTouchActive) return;
+  if(tMode==='single'){
+    e.preventDefault();
+    const t=e.changedTouches[0];
+    SVG.dispatchEvent(fakeMouse('mouseup',t));
+    tMode='none';
+  } else if(tMode==='nav'){
+    if(e.touches.length<2){ tMode='none'; cancelActiveInteraction(); }
+  }
+},{passive:false});
+wrapEl.addEventListener('touchcancel',()=>{ cancelActiveInteraction(); tMode='none'; },{passive:true});
 
 // =====================================================
 // PROPERTIES
